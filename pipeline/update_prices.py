@@ -61,9 +61,6 @@ def main():
     now = datetime.now(timezone.utc)
     ny = now.astimezone(ZoneInfo(config.TIMEZONE))
     ts, today = now.strftime("%Y-%m-%dT%H:%M:%SZ"), ny.date().isoformat()
-    if ny.weekday() >= 5:
-        print("Weekend: markets closed, nothing to fetch.")
-        return
     market_open = ny.time() >= datetime.strptime("09:30", "%H:%M").time()
 
     con = db.connect()
