@@ -1,0 +1,26 @@
+[
+  {
+    "id": "huang-out",
+    "name": "Huang out as Nvidia CEO",
+    "date": "Nov 9–13, 2026",
+    "show_until": "2026-11-27",
+    "isolate": "nvda",
+    "card": "Nvidia −12.75% on the week. Everything else held still.",
+    "story": "Nvidia's board opened an investigation on Nov 8. The Wall Street Journal reported on Nov 11 that the board was preparing to oust Jensen Huang, and on Nov 12 he resigned. CFO Colette Kress is interim CEO. Here only Nvidia moves, so you see its effect alone.",
+    "moves": {"nvda": -12.75},
+    "est": [],
+    "sources": [["Nvidia 8-K, Nov 12", "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000082/nvidiaannouncesceotransiti.htm"], ["The Glass Desk, weekly closes", "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"]]
+  },
+  {
+    "id": "yields-515",
+    "name": "Yields jump to 5.15%",
+    "date": "Nov 9–13, 2026",
+    "show_until": "2026-11-27",
+    "isolate": "rates",
+    "card": "10-year +29.5 bp, 2-year about +38 bp. Bonds only.",
+    "story": "The 10-year Treasury yield rose every session, from 4.86% to 5.15%, after a hot inflation report raised bets on another Fed hike. Here only interest rates move, so you see what the bond side of your portfolio did on its own.",
+    "moves": {"r2": 38, "r10": 29.5},
+    "est": ["r2"],
+    "sources": [["The Glass Desk", "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"]]
+  }
+]

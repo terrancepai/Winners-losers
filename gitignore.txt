@@ -1,0 +1,4 @@
+# the real database lives on the "data" branch, not in main
+data/*.db
+__pycache__/
+.DS_Store

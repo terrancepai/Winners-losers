@@ -1,0 +1,741 @@
+{
+ "demo": true,
+ "generated_at": "2026-11-15T04:56:04Z",
+ "last_quote": "2026-11-13T21:00:00Z",
+ "week_label": "Week of Mon Nov 9",
+ "x_labels": [
+  "Fri 6",
+  "Mon 9",
+  "Tue 10",
+  "Wed 11",
+  "Thu 12",
+  "Fri 13"
+ ],
+ "assets": [
+  {
+   "id": "ustm",
+   "name": "U.S. stocks (total market)",
+   "symbol": "VTI",
+   "kind": "st",
+   "nvda_w": 0.072
+  },
+  {
+   "id": "sp",
+   "name": "S&P 500 (VOO)",
+   "symbol": "VOO",
+   "kind": "st",
+   "nvda_w": 0.085
+  },
+  {
+   "id": "ndx",
+   "name": "Nasdaq-100 (QQQ)",
+   "symbol": "QQQ",
+   "kind": "st",
+   "nvda_w": 0.081
+  },
+  {
+   "id": "intl",
+   "name": "International stocks",
+   "symbol": "VXUS",
+   "kind": "st",
+   "nvda_w": 0.0
+  },
+  {
+   "id": "btc",
+   "name": "Bitcoin",
+   "symbol": "BTC-USD",
+   "kind": "al",
+   "nvda_w": 0.0
+  },
+  {
+   "id": "short",
+   "name": "Short Treasuries",
+   "symbol": "SHY",
+   "kind": "bd",
+   "dv01_years": 1.9
+  },
+  {
+   "id": "usb",
+   "name": "U.S. bonds (total market)",
+   "symbol": "BND",
+   "kind": "bd",
+   "dv01_years": 6.0
+  },
+  {
+   "id": "intlb",
+   "name": "International bonds (hedged)",
+   "symbol": "BNDX",
+   "kind": "bd",
+   "dv01_years": 3.5
+  }
+ ],
+ "portfolios": [
+  {
+   "name": "VOO and Chill",
+   "tag": "",
+   "sub": "One S&P 500 fund, nothing else.",
+   "w": {
+    "sp": 100
+   },
+   "path": [
+    0.0,
+    0.0235,
+    0.019611,
+    0.032968,
+    0.029352,
+    0.025235
+   ]
+  },
+  {
+   "name": "Retirement Fund 2060",
+   "tag": "td",
+   "sub": "Retiring in about 35 years.",
+   "w": {
+    "ustm": 54.9,
+    "intl": 36.6,
+    "usb": 5.9,
+    "intlb": 2.6
+   },
+   "path": [
+    -0.0,
+    0.018279,
+    0.014539,
+    0.024462,
+    0.020686,
+    0.017367
+   ]
+  },
+  {
+   "name": "Classic 60/40",
+   "tag": "",
+   "sub": "S&P 500 and U.S. bonds.",
+   "w": {
+    "sp": 60,
+    "usb": 40
+   },
+   "path": [
+    0.0,
+    0.013788,
+    0.008625,
+    0.016639,
+    0.012089,
+    0.008103
+   ]
+  },
+  {
+   "name": "Retirement Fund Income",
+   "tag": "td",
+   "sub": "Already retired.",
+   "w": {
+    "ustm": 17,
+    "intl": 12,
+    "usb": 37,
+    "intlb": 16,
+    "short": 18
+   },
+   "path": [
+    0.0,
+    0.005308,
+    0.00037,
+    0.003495,
+    -0.000754,
+    -0.00357
+   ]
+  },
+  {
+   "name": "Crypto heavy",
+   "tag": "risk",
+   "sub": "30% bitcoin, 70% S&P 500.",
+   "w": {
+    "btc": 30,
+    "sp": 70
+   },
+   "path": [
+    0.0,
+    0.01945,
+    0.006123,
+    0.016934,
+    0.003237,
+    -0.011942
+   ]
+  },
+  {
+   "name": "Tech tilt",
+   "tag": "tech",
+   "sub": "40% QQQ, 30% S&P 500, 30% U.S. bonds.",
+   "w": {
+    "ndx": 40,
+    "sp": 30,
+    "usb": 30
+   },
+   "path": [
+    0.0,
+    0.020416,
+    0.014645,
+    0.028108,
+    0.023892,
+    0.016406
+   ]
+  }
+ ],
+ "shocks": [
+  {
+   "id": "week",
+   "kind": "week",
+   "name": "How you did this week",
+   "date": "Mon Nov 9 \u2013 Fri Nov 13",
+   "card": "Every market moving at once, from last week's close to the latest price.",
+   "story": "This is the whole week so far, with every market moving together, measured with real fund prices. The days and news shocks below are ranked by how much each one moved you.",
+   "moves": [
+    {
+     "label": "S&P 500",
+     "value": 2.52,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Nasdaq-100",
+     "value": 3.53,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Intl stocks",
+     "value": 1.52,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "U.S. bonds",
+     "value": -1.76,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Bitcoin",
+     "value": -9.87,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "2-yr yield",
+     "value": 38.0,
+     "unit": "bp",
+     "est": false
+    },
+    {
+     "label": "10-yr yield",
+     "value": 29.5,
+     "unit": "bp",
+     "est": false
+    }
+   ],
+   "returns": {
+    "ustm": 0.023893783783783817,
+    "sp": 0.025234782608695605,
+    "ndx": 0.03528426470588242,
+    "intl": 0.015177333333333376,
+    "btc": -0.09868874278849327,
+    "short": -0.007203658536585333,
+    "usb": -0.017594444444444468,
+    "intlb": -0.010289583333333296
+   }
+  },
+  {
+   "id": "day-2026-11-09",
+   "kind": "day",
+   "name": "Stocks rally as Nvidia board opens CEO probe",
+   "date": "Mon Nov 9",
+   "card": "What that trading day did, with every market moving.",
+   "story": "Stocks rally as Nvidia board opens CEO probe. Everything that moved on Mon Nov 9, measured from the previous close.",
+   "moves": [
+    {
+     "label": "S&P 500",
+     "value": 2.35,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Nasdaq-100",
+     "value": 3.4,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Intl stocks",
+     "value": 1.41,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "U.S. bonds",
+     "value": -0.08,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Bitcoin",
+     "value": 1.0,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "2-yr yield",
+     "value": 3.0,
+     "unit": "bp",
+     "est": false
+    },
+    {
+     "label": "10-yr yield",
+     "value": 1.3,
+     "unit": "bp",
+     "est": false
+    }
+   ],
+   "returns": {
+    "ustm": 0.02400000000000002,
+    "sp": 0.023500000000000076,
+    "ndx": 0.03400000000000003,
+    "intl": 0.014100000000000001,
+    "btc": 0.010000000000000009,
+    "short": -0.0005695121951219129,
+    "usb": -0.0007805555555555621,
+    "intlb": -0.0004541666666666444
+   }
+  },
+  {
+   "id": "day-2026-11-10",
+   "kind": "day",
+   "name": "Hot inflation report sends yields higher",
+   "date": "Tue Nov 10",
+   "card": "What that trading day did, with every market moving.",
+   "story": "Hot inflation report sends yields higher. Everything that moved on Tue Nov 10, measured from the previous close.",
+   "moves": [
+    {
+     "label": "S&P 500",
+     "value": -0.38,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Nasdaq-100",
+     "value": -0.6,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Intl stocks",
+     "value": -0.23,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "U.S. bonds",
+     "value": -0.71,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Bitcoin",
+     "value": -3.5,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "2-yr yield",
+     "value": 19.0,
+     "unit": "bp",
+     "est": false
+    },
+    {
+     "label": "10-yr yield",
+     "value": 11.8,
+     "unit": "bp",
+     "est": false
+    }
+   ],
+   "returns": {
+    "ustm": -0.004200010557432354,
+    "sp": -0.003799975928010735,
+    "ndx": -0.005999971555353256,
+    "intl": -0.002299575978700452,
+    "btc": -0.03500000065355657,
+    "short": -0.003610592862032469,
+    "usb": -0.007079136770645977,
+    "intlb": -0.004131042848627087
+   }
+  },
+  {
+   "id": "day-2026-11-11",
+   "kind": "day",
+   "name": "AI stocks rebound; bond market closed",
+   "date": "Wed Nov 11",
+   "card": "What that trading day did, with every market moving.",
+   "story": "AI stocks rebound; bond market closed. Everything that moved on Wed Nov 11, measured from the previous close.",
+   "moves": [
+    {
+     "label": "S&P 500",
+     "value": 1.31,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Nasdaq-100",
+     "value": 2.3,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Intl stocks",
+     "value": 0.79,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "U.S. bonds",
+     "value": 0.0,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Bitcoin",
+     "value": 0.5,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "2-yr yield",
+     "value": 0.0,
+     "unit": "bp",
+     "est": false
+    },
+    {
+     "label": "10-yr yield",
+     "value": 0.0,
+     "unit": "bp",
+     "est": false
+    }
+   ],
+   "returns": {
+    "ustm": 0.0124999768082108,
+    "sp": 0.013099912811283199,
+    "ndx": 0.022999957218565736,
+    "intl": 0.007899044049624049,
+    "btc": 0.00500000044021931,
+    "short": 0.0,
+    "usb": 0.0,
+    "intlb": 0.0
+   }
+  },
+  {
+   "id": "day-2026-11-12",
+   "kind": "day",
+   "name": "Jensen Huang resigns as Nvidia CEO",
+   "date": "Thu Nov 12",
+   "card": "What that trading day did, with every market moving.",
+   "story": "Jensen Huang resigns as Nvidia CEO. Everything that moved on Thu Nov 12, measured from the previous close.",
+   "moves": [
+    {
+     "label": "S&P 500",
+     "value": -0.35,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Nasdaq-100",
+     "value": -0.32,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Intl stocks",
+     "value": -0.21,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "U.S. bonds",
+     "value": -0.6,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Bitcoin",
+     "value": -3.8,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "2-yr yield",
+     "value": 13.0,
+     "unit": "bp",
+     "est": false
+    },
+    {
+     "label": "10-yr yield",
+     "value": 10.0,
+     "unit": "bp",
+     "est": false
+    }
+   ],
+   "returns": {
+    "ustm": -0.0044999434562078555,
+    "sp": -0.0034999767098479184,
+    "ndx": -0.003199967551358429,
+    "intl": -0.002099840485342952,
+    "btc": -0.03799999988139513,
+    "short": -0.00247007619640105,
+    "usb": -0.005999902008133384,
+    "intlb": -0.0034993721222269514
+   }
+  },
+  {
+   "id": "day-2026-11-13",
+   "kind": "day",
+   "name": "Tech slips as 10-year yield tops 5.15%",
+   "date": "Fri Nov 13",
+   "card": "What that trading day did, with every market moving.",
+   "story": "Tech slips as 10-year yield tops 5.15%. Everything that moved on Fri Nov 13, measured from the previous close.",
+   "moves": [
+    {
+     "label": "S&P 500",
+     "value": -0.4,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Nasdaq-100",
+     "value": -1.22,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Intl stocks",
+     "value": -0.24,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "U.S. bonds",
+     "value": -0.38,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "Bitcoin",
+     "value": -4.35,
+     "unit": "%",
+     "est": false
+    },
+    {
+     "label": "2-yr yield",
+     "value": 3.0,
+     "unit": "bp",
+     "est": false
+    },
+    {
+     "label": "10-yr yield",
+     "value": 6.4,
+     "unit": "bp",
+     "est": false
+    }
+   ],
+   "returns": {
+    "ustm": -0.0038000367092327902,
+    "sp": -0.003999983104612026,
+    "ndx": -0.012200007268256652,
+    "intl": -0.0023990650066690877,
+    "btc": -0.04349999972539986,
+    "short": -0.0005696347830782544,
+    "usb": -0.0038405259281271142,
+    "intlb": -0.0022409940184151544
+   }
+  },
+  {
+   "id": "huang-out",
+   "kind": "curated",
+   "name": "Huang out as Nvidia CEO",
+   "date": "Nov 9\u201313, 2026",
+   "card": "Nvidia \u221212.75% on the week. Everything else held still.",
+   "story": "Nvidia's board opened an investigation on Nov 8. The Wall Street Journal reported on Nov 11 that the board was preparing to oust Jensen Huang, and on Nov 12 he resigned. CFO Colette Kress is interim CEO. Here only Nvidia moves, so you see its effect alone.",
+   "moves": [
+    {
+     "label": "Nvidia",
+     "value": -12.75,
+     "unit": "%",
+     "est": false
+    }
+   ],
+   "sources": [
+    [
+     "Nvidia 8-K, Nov 12",
+     "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000082/nvidiaannouncesceotransiti.htm"
+    ],
+    [
+     "The Glass Desk, weekly closes",
+     "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"
+    ]
+   ],
+   "returns": {
+    "ustm": -0.009179999999999999,
+    "sp": -0.0108375,
+    "ndx": -0.0103275,
+    "intl": -0.0,
+    "btc": -0.0,
+    "short": 0.0,
+    "usb": 0.0,
+    "intlb": 0.0
+   }
+  },
+  {
+   "id": "yields-515",
+   "kind": "curated",
+   "name": "Yields jump to 5.15%",
+   "date": "Nov 9\u201313, 2026",
+   "card": "10-year +29.5 bp, 2-year about +38 bp. Bonds only.",
+   "story": "The 10-year Treasury yield rose every session, from 4.86% to 5.15%, after a hot inflation report raised bets on another Fed hike. Here only interest rates move, so you see what the bond side of your portfolio did on its own.",
+   "moves": [
+    {
+     "label": "2-yr yield",
+     "value": 38,
+     "unit": "bp",
+     "est": true
+    },
+    {
+     "label": "10-yr yield",
+     "value": 29.5,
+     "unit": "bp",
+     "est": false
+    }
+   ],
+   "sources": [
+    [
+     "The Glass Desk",
+     "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"
+    ]
+   ],
+   "returns": {
+    "ustm": 0.0,
+    "sp": 0.0,
+    "ndx": 0.0,
+    "intl": 0.0,
+    "btc": 0.0,
+    "short": -0.0071839,
+    "usb": -0.0174824375,
+    "intlb": -0.01025973125
+   }
+  }
+ ],
+ "ticker": [
+  {
+   "name": "S&P 500 (SPY)",
+   "value": 773.027,
+   "change": 2.52,
+   "unit": "%"
+  },
+  {
+   "name": "Dow (DIA)",
+   "value": 523.5484,
+   "change": 2.08,
+   "unit": "%"
+  },
+  {
+   "name": "Nasdaq-100 (QQQ)",
+   "value": 703.9933,
+   "change": 3.53,
+   "unit": "%"
+  },
+  {
+   "name": "Russell 2000 (IWM)",
+   "value": 277.4871,
+   "change": 1.31,
+   "unit": "%"
+  },
+  {
+   "name": "10-yr yield",
+   "value": 5.154,
+   "change": 29.5,
+   "unit": "bp",
+   "is_rate": true
+  },
+  {
+   "name": "Nvidia",
+   "value": 162.8633,
+   "change": -12.74,
+   "unit": "%"
+  },
+  {
+   "name": "Apple",
+   "value": 353.4757,
+   "change": 0.79,
+   "unit": "%"
+  },
+  {
+   "name": "Microsoft",
+   "value": 523.8524,
+   "change": -1.27,
+   "unit": "%"
+  },
+  {
+   "name": "Gold (GLD)",
+   "value": 354.7867,
+   "change": -4.63,
+   "unit": "%"
+  },
+  {
+   "name": "Oil (USO)",
+   "value": 79.089,
+   "change": -1.14,
+   "unit": "%"
+  },
+  {
+   "name": "Bitcoin",
+   "value": 68271.6238,
+   "change": -9.87,
+   "unit": "%"
+  }
+ ],
+ "stories": [
+  {
+   "kicker": "Nvidia",
+   "headline": "Nvidia's board moved to oust Jensen Huang. A day later, he was gone.",
+   "summary": "The Journal reported the board was preparing to remove its co-founder after reports of two relationships. Huang resigned Thursday and CFO Colette Kress is interim CEO.",
+   "tickers": "NVDA,AMD",
+   "source": "SEC filing",
+   "url": "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000082/nvidiaannouncesceotransiti.htm"
+  },
+  {
+   "kicker": "Iran",
+   "headline": "Vance weighs face-to-face talks with Iran's security chief",
+   "summary": "Officials told the Journal the vice president is emerging as the lead negotiator to end the war. Any meeting remains preliminary.",
+   "tickers": "Oil,10-yr yield",
+   "source": "Just Security",
+   "url": "https://justsecurity.org/164226/early-edition-november-12-2026"
+  },
+  {
+   "kicker": "Rates",
+   "headline": "Hot inflation data pushes the 10-year yield back above 5%",
+   "summary": "Core prices rose 0.3% in October, more than expected, lifting bets on another Fed hike.",
+   "tickers": "10-yr yield,TLT",
+   "source": "investingLive",
+   "url": "https://investinglive.com/technical-analysis/us-stocks-slide-yields-jump-usd-higher-after-hotter-than-expected-october-cpi/"
+  },
+  {
+   "kicker": "Chips",
+   "headline": "AMD and Broadcom jump as investors rotate within chips",
+   "summary": "Both rose about 18% on the week while Nvidia fell, so chip funds still finished higher.",
+   "tickers": "AMD,AVGO",
+   "source": "The Glass Desk",
+   "url": "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"
+  },
+  {
+   "kicker": "Crypto",
+   "headline": "Bitcoin slides to its lowest level since August",
+   "summary": "Bitcoin fell about 10% on the week as rate-hike fears hit risky assets.",
+   "tickers": "BTC",
+   "source": "Investrade",
+   "url": "https://investrade.com/market-review-november-13-2026/"
+  }
+ ],
+ "stories_date": "2026-11-13"
+}

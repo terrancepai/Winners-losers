@@ -1,0 +1,35 @@
+name: Backfill history (run once)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Get the database from the data branch
+        run: |
+          mkdir -p data
+          (git fetch origin data --depth=1 && git show origin/data:market.db > data/market.db) || echo "No database yet, starting fresh"
+
+      - name: Load about 100 days of daily closes
+        env:
+          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
+        run: python pipeline/backfill.py
+
+      - name: Save the database
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/save_db.sh
