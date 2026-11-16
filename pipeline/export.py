@@ -205,6 +205,8 @@ def main(con=None, out_path=OUT, demo=False):
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "last_quote": last,
         "week_label": f"Week of {label(week[0]) if week else label(base)}",
+        "price_day": today,
+        "price_day_live": (today, anchor) in live,
         "x_labels": [short_label(d) for d in days],
         "assets": [{k: a[k] for k in ("id", "name", "symbol", "kind", "nvda_w") if k in a} |
                    ({"dv01_years": a["D"] * a["beta"]} if a["kind"] == "bd" else {}) for a in config.ASSETS],
