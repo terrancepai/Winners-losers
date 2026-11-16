@@ -4,8 +4,8 @@ This week's market news, translated into what it did to six common portfolios, f
 
 **What it shows that a brokerage app doesn't:**
 - How every portfolio did this week, side by side (5-day race chart, winner and loser)
-- Which days and news events moved your kind of portfolio most, ranked
-- What's hiding inside your funds: how much Nvidia you own through an index fund, and how much a 0.01% rise in yields costs you
+- The 4 things that moved your kind of portfolio most over the past 5 days (a company inside your funds, interest rates, bitcoin...), each with a short news story explaining why
+- What's hiding inside your funds: your biggest company stakes through index funds, and how much a 0.01% rise in yields costs you
 - The day's top market stories, summarized
 
 ## How it works
@@ -15,7 +15,7 @@ This week's market news, translated into what it did to six common portfolios, f
  ───────────────────────              ──────────────────────────
  Finnhub ─ fund & stock prices        Finnhub ─ news headlines
  Coinbase ─ bitcoin                          │
- FRED ─ Treasury yields                Claude ─ picks 5, writes summaries
+ FRED ─ Treasury yields                Claude ─ top 5 stories + why each mover moved
         │                                    │
         └────────────►  SQLite database  ◄───┘
                         (data/market.db)
@@ -31,12 +31,11 @@ Everything runs free on GitHub Actions. No server to keep running. The database 
 
 | Folder | What's in it |
 |---|---|
-| `pipeline/config.py` | Assets, portfolios, ticker strip. **Edit this to change portfolios.** |
+| `pipeline/config.py` | Assets, portfolios, fund holdings, ticker strip. **Edit this to change portfolios.** |
 | `pipeline/update_prices.py` | The 15-minute job |
 | `pipeline/update_news.py` | The daily news job |
 | `pipeline/backfill.py` | One-time load of ~100 days of history |
 | `pipeline/export.py` | Turns the database into the JSON the site reads |
-| `content/shocks.json` | Hand-written "news shocks" (e.g. "Huang out as Nvidia CEO"). Each has a `show_until` date and disappears after it. |
 | `site/` | The website |
 | `.github/workflows/` | The schedules |
 
@@ -84,8 +83,7 @@ Opening `site/index.html` by double-clicking won't work: browsers block it from 
 ## Everyday changes
 
 - **Change a portfolio:** edit `PORTFOLIOS` in `pipeline/config.py`. Weights are percentages and should add to 100.
-- **Add a news shock:** copy an entry in `content/shocks.json`. `moves` uses `nvda`, `us`, `ndx`, `intl`, `btc` (percent) and `r2`, `r10`, `s` (basis points). Set `"isolate": "nvda"` or `"rates"` to move only that. Set `show_until` so it drops off.
-- **Update Nvidia look-through weights:** `nvda_w` in `config.py`, from each fund's holdings page. Worth doing every few months.
+- **Update fund holdings:** `HOLDINGS` in `config.py` lists each big company's weight in the S&P 500 and Nasdaq-100 funds. Refresh them every few months from the funds' holdings pages. To track another company, add a line; the next price run starts pricing it (run Backfill once to give it history).
 
 ## Things to know
 
@@ -98,7 +96,7 @@ Opening `site/index.html` by double-clicking won't work: browsers block it from 
 
 ## Explaining it in an interview
 
-- *Portfolio review:* look-through exposure. A plain S&P 500 fund is about 8.5% Nvidia, and "tech heavy" QQQ isn't much more.
+- *Portfolio review:* look-through exposure and attribution. Which companies inside your index funds actually drove this week's result, and how big your hidden stakes are.
 - *Fixed income:* DV01 per $100,000, and why a bond-heavy retirement portfolio lost money in a week stocks rallied.
-- *Risk:* scenario analysis. Isolating one shock (a CEO exit, a rate jump) versus the whole week, and ranking what drove the result.
+- *Risk:* isolating one driver (a CEO exit, a rate jump) versus everything moving at once, and ranking what drove the result for each portfolio.
 - *Engineering:* a scheduled data pipeline, a SQL database, and a static front end, all free to run.
