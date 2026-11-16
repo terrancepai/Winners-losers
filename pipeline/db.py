@@ -44,6 +44,17 @@ CREATE TABLE IF NOT EXISTS stories (
     PRIMARY KEY (date, rank)
 );
 
+-- why each big mover moved: one short story per mover per day, written by Claude
+CREATE TABLE IF NOT EXISTS mover_stories (
+    date      TEXT NOT NULL,
+    mover_id  TEXT NOT NULL,        -- a ticker like NVDA, or rates / btc / intl / rest
+    headline  TEXT NOT NULL,
+    story     TEXT,
+    source    TEXT,
+    url       TEXT,
+    PRIMARY KEY (date, mover_id)
+);
+
 -- one short label per trading day, used to name that day's shock
 CREATE TABLE IF NOT EXISTS day_headlines (
     date      TEXT PRIMARY KEY,
