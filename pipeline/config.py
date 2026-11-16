@@ -1,24 +1,44 @@
 """Everything you might want to change lives here: assets, portfolios, ticker strip.
 
-Each asset is tracked with a real ETF (or bitcoin), so weekly and daily returns
-come straight from market prices. The bond numbers (duration etc.) are only used
-for the "what if" shocks in content/shocks.json and for the DV01 line.
+Each asset is tracked with a real ETF (or bitcoin), so returns come straight from
+market prices. The bond durations are only used for the DV01 line.
 """
 
 # id: short name used everywhere. symbol: what we price it with.
 # source: "finnhub" (stocks/ETFs) or "coinbase" (crypto).
-# nvda_w: Nvidia's weight inside the fund (look-through). Update a few times a year.
 # D / C / SD: duration, convexity, spread duration (bonds only). key: which yield drives it.
 ASSETS = [
-    {"id": "ustm",  "name": "U.S. stocks (total market)",  "symbol": "VTI",  "source": "finnhub", "kind": "st", "factor": "us",   "nvda_w": 0.072},
-    {"id": "sp",    "name": "S&P 500 (VOO)",               "symbol": "VOO",  "source": "finnhub", "kind": "st", "factor": "us",   "nvda_w": 0.085},
-    {"id": "ndx",   "name": "Nasdaq-100 (QQQ)",            "symbol": "QQQ",  "source": "finnhub", "kind": "st", "factor": "ndx",  "nvda_w": 0.081},
-    {"id": "intl",  "name": "International stocks",        "symbol": "VXUS", "source": "finnhub", "kind": "st", "factor": "intl", "nvda_w": 0.0},
-    {"id": "btc",   "name": "Bitcoin",                     "symbol": "BTC-USD", "source": "coinbase", "kind": "al", "factor": "btc", "nvda_w": 0.0},
+    {"id": "ustm",  "name": "U.S. stocks (total market)",  "symbol": "VTI",  "source": "finnhub", "kind": "st", "factor": "us"},
+    {"id": "sp",    "name": "S&P 500 (VOO)",               "symbol": "VOO",  "source": "finnhub", "kind": "st", "factor": "us"},
+    {"id": "ndx",   "name": "Nasdaq-100 (QQQ)",            "symbol": "QQQ",  "source": "finnhub", "kind": "st", "factor": "ndx"},
+    {"id": "intl",  "name": "International stocks",        "symbol": "VXUS", "source": "finnhub", "kind": "st", "factor": "intl"},
+    {"id": "btc",   "name": "Bitcoin",                     "symbol": "BTC-USD", "source": "coinbase", "kind": "al", "factor": "btc"},
     {"id": "short", "name": "Short Treasuries",            "symbol": "SHY",  "source": "finnhub", "kind": "bd", "D": 1.9, "C": 5,  "SD": 0.0, "key": "r2",  "beta": 1.0},
     {"id": "usb",   "name": "U.S. bonds (total market)",   "symbol": "BND",  "source": "finnhub", "kind": "bd", "D": 6.0, "C": 50, "SD": 1.8, "key": "r10", "beta": 1.0},
     {"id": "intlb", "name": "International bonds (hedged)", "symbol": "BNDX", "source": "finnhub", "kind": "bd", "D": 7.0, "C": 60, "SD": 0.0, "key": "r10", "beta": 0.5},
 ]
+
+# What's inside the stock funds: each company's weight in each fund (percent).
+# Used to find which companies moved each portfolio most, and for "hidden stakes".
+# Sources: S&P 500 (sp) = SPDR S&P 500 holdings, Nov 9, 2026 (Trefis) for the top 7;
+# Micron and Tesla from the Oct 2, 2026 holdings. Nasdaq-100 (ndx) = Invesco QQQ SEC filing,
+# June 30, 2026; Meta is an estimate. Total market (ustm) = S&P weight x 0.85 (estimate).
+# Weights drift with prices: refresh them every few months from each fund's holdings page.
+HOLDINGS = {
+    "NVDA":  {"name": "Nvidia",    "w": {"sp": 6.6,  "ndx": 7.60}},
+    "AAPL":  {"name": "Apple",     "w": {"sp": 7.9,  "ndx": 6.67}},
+    "MSFT":  {"name": "Microsoft", "w": {"sp": 6.2,  "ndx": 4.35}},
+    "GOOGL": {"name": "Alphabet",  "w": {"sp": 4.7,  "ndx": 6.29}},
+    "AMZN":  {"name": "Amazon",    "w": {"sp": 4.0,  "ndx": 4.02}},
+    "AVGO":  {"name": "Broadcom",  "w": {"sp": 2.3,  "ndx": 2.81}},
+    "META":  {"name": "Meta",      "w": {"sp": 2.2,  "ndx": 2.5}},
+    "MU":    {"name": "Micron",    "w": {"sp": 1.82, "ndx": 5.64}},
+    "TSLA":  {"name": "Tesla",     "w": {"sp": 1.57, "ndx": 3.30}},
+    "AMD":   {"name": "AMD",       "w": {"ndx": 4.10}},
+}
+for _h in HOLDINGS.values():
+    if "sp" in _h["w"]:
+        _h["w"].setdefault("ustm", round(_h["w"]["sp"] * 0.85, 2))
 
 # Weights in percent. Order sets each portfolio's chart color, so keep it stable.
 PORTFOLIOS = [
@@ -65,6 +85,9 @@ def all_symbols():
     for a in ASSETS:
         if a["symbol"] not in seen:
             seen.add(a["symbol"]); out.append((a["symbol"], a["source"]))
+    for sym in HOLDINGS:
+        if sym not in seen:
+            seen.add(sym); out.append((sym, "finnhub"))
     for _, sym, src in TICKER:
         if sym not in seen:
             seen.add(sym); out.append((sym, src))
