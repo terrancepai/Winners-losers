@@ -1,12 +1,19 @@
 """Turn the database into site/data/latest.json, the only file the website reads.
 
-The pipeline does the finance math (returns, paths, shocks). The website only multiplies
-each portfolio's weights by the asset returns in this file and draws the result.
+The pipeline does the finance math. The website only multiplies each portfolio's
+weights by the asset returns in this file and draws the result.
+
+Two kinds of "shock" go to the site:
+  - week:  the last 5 trading days, every market moving at once
+  - mover: one thing that moved portfolios, on its own. Either a company inside the
+           stock funds (its move x its weight in each fund), or a market force:
+           interest rates, bitcoin, international stocks, or the rest of the U.S. market.
+The site shows the week, then the 4 movers that hit the selected portfolio hardest.
 """
 import json
 import os
 import sys
-from datetime import date as Date, datetime, timedelta, timezone
+from datetime import date as Date, datetime, timezone
 
 sys.path.insert(0, os.path.dirname(__file__))
 import config
@@ -14,7 +21,7 @@ import db
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUT = os.path.join(ROOT, "site", "data", "latest.json")
-SHOCKS_FILE = os.path.join(ROOT, "content", "shocks.json")
+WINDOW = 5  # trading days
 
 
 # ---------- reading the database ----------
@@ -45,23 +52,22 @@ def at_or_before(series, day):
     return series[max(earlier)] if earlier else None
 
 
-# ---------- the week ----------
-def week_window(trading_days):
-    """Base close (last day before this week's Monday) and this week's trading days."""
-    latest = trading_days[-1]
-    monday = (Date.fromisoformat(latest) - timedelta(days=Date.fromisoformat(latest).weekday())).isoformat()
-    week = [d for d in trading_days if d >= monday]
-    before = [d for d in trading_days if d < monday]
-    base = before[-1] if before else week[0]
-    if base == week[0]:
-        week = week[1:]
-    return base, week
+def change(series, start, end):
+    p0, p1 = at_or_before(series, start), at_or_before(series, end)
+    return (p1 / p0 - 1) if p0 and p1 else None
 
 
-def asset_return(px, a, start, end):
-    s = px.get(a["symbol"], {})
-    p0, p1 = at_or_before(s, start), at_or_before(s, end)
-    return (p1 / p0 - 1) if p0 and p1 else 0.0
+def anchor_symbol():
+    return next(a["symbol"] for a in config.ASSETS if a["id"] == "sp")
+
+
+def window(px):
+    """Base close and the last WINDOW trading days after it (rolling 5 days)."""
+    days = sorted(px.get(anchor_symbol(), {}))
+    if len(days) < 2:
+        return None, []
+    days = days[-(WINDOW + 1):]
+    return days[0], days[1:]
 
 
 def label(day):
@@ -74,67 +80,55 @@ def short_label(day):
     return d.strftime("%a ") + str(d.day)
 
 
-def pct_move(lbl, r, est=False):
-    return {"label": lbl, "value": round(r * 100, 2), "unit": "%", "est": est}
+def pct_move(lbl, r):
+    return {"label": lbl, "value": round((r or 0) * 100, 2), "unit": "%"}
 
 
-def bp_move(lbl, v, est=False):
-    return {"label": lbl, "value": round(v, 1), "unit": "bp", "est": est}
+# ---------- movers ----------
+def mover_pool(px, yl, base, end):
+    """Everything that could have moved a portfolio over the window, each on its own."""
+    fund = {a["id"]: (change(px.get(a["symbol"]), base, end) or 0.0) for a in config.ASSETS}
+    pool = []
+    explained = {}  # how much of each stock fund's move its top holdings explain
+    for sym, h in config.HOLDINGS.items():
+        r = change(px.get(sym), base, end)
+        if r is None:
+            continue
+        returns = {fid: w / 100 * r for fid, w in h["w"].items()}
+        for fid, v in returns.items():
+            explained[fid] = explained.get(fid, 0) + v
+        pool.append({"id": sym, "kind": "company", "name": h["name"], "symbol": sym, "move": r,
+                     "move_label": f"{sym} {r * 100:+.2f}%", "chips": [pct_move(h["name"], r)],
+                     "weights": h["w"], "returns": returns})
+
+    # the rest of each U.S. stock fund, after taking out the companies above
+    rest = {fid: fund[fid] - explained.get(fid, 0) for fid in ("sp", "ustm", "ndx")}
+    top_w = sum(h["w"].get("sp", 0) for h in config.HOLDINGS.values()) / 100
+    rest_move = rest["sp"] / (1 - top_w) if top_w < 1 else 0
+    pool.append({"id": "rest", "kind": "market", "name": "The rest of the U.S. market",
+                 "move": rest_move, "move_label": f"Other S&P 500 stocks {rest_move * 100:+.2f}%",
+                 "chips": [pct_move("Other S&P 500 stocks", rest_move)], "returns": rest})
+
+    bonds = {a["id"]: fund[a["id"]] for a in config.ASSETS if a["kind"] == "bd"}
+    y0, y1 = at_or_before(yl.get("r10"), base), at_or_before(yl.get("r10"), end)
+    r10 = (y1 - y0) * 100 if y0 is not None and y1 is not None else None
+    pool.append({"id": "rates", "kind": "market", "name": "Interest rates", "move": fund["usb"],
+                 "move_label": (f"10-yr yield {r10:+.1f} bp" if r10 is not None else f"U.S. bonds {fund['usb'] * 100:+.2f}%"),
+                 "chips": ([{"label": "10-yr yield", "value": round(r10, 1), "unit": "bp"}] if r10 is not None else []) +
+                          [pct_move("U.S. bonds", fund["usb"]), pct_move("Intl bonds", fund["intlb"]), pct_move("Short Treasuries", fund["short"])],
+                 "returns": bonds})
+    pool.append({"id": "btc", "kind": "market", "name": "Bitcoin", "move": fund["btc"],
+                 "move_label": f"Bitcoin {fund['btc'] * 100:+.2f}%", "chips": [pct_move("Bitcoin", fund["btc"])],
+                 "returns": {"btc": fund["btc"]}})
+    pool.append({"id": "intl", "kind": "market", "name": "International stocks", "move": fund["intl"],
+                 "move_label": f"VXUS {fund['intl'] * 100:+.2f}%", "chips": [pct_move("International stocks (VXUS)", fund["intl"])],
+                 "returns": {"intl": fund["intl"]}})
+    return pool, fund
 
 
-def auto_moves(px, yl, start, end):
-    """The chips shown under a shock: what the main markets did."""
-    by_id = {a["id"]: a for a in config.ASSETS}
-    moves = [pct_move("S&P 500", asset_return(px, by_id["sp"], start, end)),
-             pct_move("Nasdaq-100", asset_return(px, by_id["ndx"], start, end)),
-             pct_move("Intl stocks", asset_return(px, by_id["intl"], start, end)),
-             pct_move("U.S. bonds", asset_return(px, by_id["usb"], start, end)),
-             pct_move("Bitcoin", asset_return(px, by_id["btc"], start, end))]
-    for key, lbl in (("r2", "2-yr yield"), ("r10", "10-yr yield")):
-        y0, y1 = at_or_before(yl.get(key), start), at_or_before(yl.get(key), end)
-        if y0 is not None and y1 is not None:
-            moves.append(bp_move(lbl, (y1 - y0) * 100))
-    return moves
-
-
-# ---------- curated "what if" shocks ----------
-def curated_returns(sh):
-    m = sh.get("moves", {})
-    out = {}
-    for a in config.ASSETS:
-        if a["kind"] == "bd":
-            dy = m.get(a["key"], 0) / 10000 * a["beta"]
-            ds = m.get("s", 0) / 10000
-            out[a["id"]] = -a["D"] * dy + 0.5 * a["C"] * dy * dy - a["SD"] * ds
-        elif sh.get("isolate") == "nvda":
-            out[a["id"]] = a.get("nvda_w", 0) * m.get("nvda", 0) / 100
-        elif sh.get("isolate") == "rates":
-            out[a["id"]] = 0.0
-        else:
-            out[a["id"]] = m.get(a["factor"], 0) / 100
-    return out
-
-
-CURATED_LABELS = {"nvda": ("Nvidia", "%"), "r2": ("2-yr yield", "bp"), "r10": ("10-yr yield", "bp"), "s": ("Corp. spreads", "bp"),
-                  "us": ("U.S. stocks", "%"), "ndx": ("Nasdaq-100", "%"), "intl": ("Intl stocks", "%"), "btc": ("Bitcoin", "%")}
-
-
-def load_curated(today):
-    if not os.path.exists(SHOCKS_FILE):
-        return []
-    with open(SHOCKS_FILE) as f:
-        items = json.load(f)
-    out = []
-    for sh in items:
-        if sh.get("show_until") and sh["show_until"] < today:
-            continue  # stale news drops off on its own
-        est = set(sh.get("est", []))
-        moves = [{"label": CURATED_LABELS[k][0], "value": v, "unit": CURATED_LABELS[k][1], "est": k in est}
-                 for k, v in sh.get("moves", {}).items() if k in CURATED_LABELS]
-        out.append({"id": sh["id"], "kind": "curated", "name": sh["name"], "date": sh.get("date", ""),
-                    "card": sh.get("card", ""), "story": sh.get("story", ""), "moves": moves,
-                    "sources": sh.get("sources", []), "returns": curated_returns(sh)})
-    return out
+def biggest_impact(m):
+    """The largest hit this mover gives any model portfolio (used to pick which get news)."""
+    return max(abs(sum(w / 100 * m["returns"].get(k, 0) for k, w in p["w"].items())) for p in config.PORTFOLIOS)
 
 
 # ---------- building the file ----------
@@ -142,85 +136,92 @@ def main(con=None, out_path=OUT, demo=False):
     con = con or db.connect()
     px, live = closes(con)
     yl = yields(con)
-    anchor = next((a["symbol"] for a in config.ASSETS if a["id"] == "sp"), "VOO")
-    trading_days = sorted(px.get(anchor, {}))
-    if len(trading_days) < 2:
+    base, days = window(px)
+    if not days:
         print("Not enough price history yet. Run backfill.py or wait for a few price runs.")
         return None
+    end, anchor = days[-1], anchor_symbol()
+    is_live = (end, anchor) in live
+    pool, fund = mover_pool(px, yl, base, end)
 
-    base, week = week_window(trading_days)
-    heads = {r["date"]: r["headline"] for r in con.execute("SELECT date, headline FROM day_headlines")}
-    today = trading_days[-1]
+    stories = {}
+    for r in con.execute("SELECT mover_id, headline, story, source, url, date FROM mover_stories WHERE date >= ? ORDER BY date",
+                         (base,)):
+        stories[r["mover_id"]] = dict(r)  # latest wins
 
-    shocks = []
-    if week:
-        shocks.append({"id": "week", "kind": "week", "name": "How you did this week",
-                       "date": f"{label(week[0])} – {label(week[-1])}",
-                       "card": "Every market moving at once, from last week's close to the latest price.",
-                       "story": "This is the whole week so far, with every market moving together, measured with real fund prices. "
-                                "The days and news shocks below are ranked by how much each one moved you.",
-                       "moves": auto_moves(px, yl, base, week[-1]),
-                       "returns": {a["id"]: asset_return(px, a, base, week[-1]) for a in config.ASSETS}})
-        prev = base
-        for d in week:
-            is_live = (d, anchor) in live and d == today
-            shocks.append({"id": f"day-{d}", "kind": "day", "name": heads.get(d, "Market moves"),
-                           "date": label(d) + (" · live" if is_live else ""),
-                           "card": "What that trading day did, with every market moving.",
-                           "story": (heads.get(d, "") + ". " if d in heads else "") +
-                                    f"Everything that moved on {label(d)}, measured from the previous close" +
-                                    (" to the latest price (the day is still trading)." if is_live else "."),
-                           "moves": auto_moves(px, yl, prev, d),
-                           "returns": {a["id"]: asset_return(px, a, prev, d) for a in config.ASSETS}})
-            prev = d
-    shocks += load_curated(today)
+    shocks = [{
+        "id": "week", "kind": "week", "name": "How you did this week",
+        "date": f"Past 5 days · {short_label(days[0])} – {short_label(end)}" + (" · live" if is_live else ""),
+        "card": "Everything moving at once, measured with real fund prices.",
+        "story": "Your portfolio over the past five trading days, with every market moving together. "
+                 "The four boxes next to this one are what moved your kind of portfolio most.",
+        "moves": [pct_move("S&P 500", fund["sp"]), pct_move("Nasdaq-100", fund["ndx"]), pct_move("Intl stocks", fund["intl"]),
+                  pct_move("U.S. bonds", fund["usb"]), pct_move("Bitcoin", fund["btc"])],
+        "returns": fund,
+    }]
+    for m in pool:
+        st = stories.get(m["id"])
+        verb = "rose" if m["move"] > 0 else "fell"
+        fallback = (f"{m['name']} {verb} {abs(m['move']) * 100:.1f}% over the past five days."
+                    if m["id"] != "rates" else f"U.S. bonds {verb} {abs(m['move']) * 100:.1f}% as yields moved.")
+        shocks.append({
+            "id": m["id"], "kind": "mover", "mover_kind": m["kind"], "name": m["name"], "symbol": m.get("symbol"),
+            "date": m["move_label"],
+            "card": st["headline"] if st else fallback,
+            "story": (st["story"] if st and st.get("story") else fallback + " The news summary appears after the next market close."),
+            "source": st.get("source") if st else None, "url": st.get("url") if st else None,
+            "moves": m["chips"],
+            "weights": m.get("weights"),
+            "returns": m["returns"],
+        })
 
-    # 5-day race: buy at the base close, hold through the week
-    days = [base] + week
+    # 5-day race: buy at the base close, hold through the window
+    xdays = [base] + days
     paths = []
     for p in config.PORTFOLIOS:
         path = []
-        for d in days:
-            v = sum(w / 100 * (1 + asset_return(px, a, base, d)) for a in config.ASSETS for k, w in p["w"].items() if k == a["id"])
+        for d in xdays:
+            v = sum(w / 100 * (1 + (change(px.get(a["symbol"]), base, d) or 0)) for a in config.ASSETS for k, w in p["w"].items() if k == a["id"])
             path.append(round(v - sum(p["w"].values()) / 100, 6))
         paths.append(path)
 
-    # ticker strip
+    # ticker strip: change over the same 5 days
     ticker = []
     for lbl, sym, _ in config.TICKER:
         s = px.get(sym, {})
-        p0, p1 = at_or_before(s, base), at_or_before(s, today)
+        p0, p1 = at_or_before(s, base), at_or_before(s, end)
         if p0 and p1:
             ticker.append({"name": lbl, "value": p1, "change": round((p1 / p0 - 1) * 100, 2), "unit": "%"})
-    y0, y1 = at_or_before(yl.get("r10"), base), at_or_before(yl.get("r10"), today)
+    y0, y1 = at_or_before(yl.get("r10"), base), at_or_before(yl.get("r10"), end)
     if y0 is not None and y1 is not None:
         ticker.insert(4, {"name": "10-yr yield", "value": y1, "change": round((y1 - y0) * 100, 1), "unit": "bp", "is_rate": True})
 
     story_date = con.execute("SELECT MAX(date) FROM stories").fetchone()[0]
-    stories = [dict(r) for r in con.execute("SELECT kicker, headline, summary, tickers, source, url FROM stories WHERE date = ? ORDER BY rank", (story_date,))] if story_date else []
+    top = [dict(r) for r in con.execute("SELECT kicker, headline, summary, tickers, source, url FROM stories WHERE date = ? ORDER BY rank", (story_date,))] if story_date else []
     last = con.execute("SELECT MAX(ts) FROM quotes").fetchone()[0]
 
     data = {
         "demo": demo,
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "last_quote": last,
-        "week_label": f"Week of {label(week[0]) if week else label(base)}",
-        "price_day": today,
-        "price_day_live": (today, anchor) in live,
-        "x_labels": [short_label(d) for d in days],
-        "assets": [{k: a[k] for k in ("id", "name", "symbol", "kind", "nvda_w") if k in a} |
+        "price_day": end,
+        "price_day_live": is_live,
+        "week_label": f"Past 5 trading days, {label(days[0])} – {label(end)}",
+        "x_labels": [short_label(d) for d in xdays],
+        "assets": [{k: a[k] for k in ("id", "name", "symbol", "kind")} |
                    ({"dv01_years": a["D"] * a["beta"]} if a["kind"] == "bd" else {}) for a in config.ASSETS],
+        "holdings": [{"symbol": s, "name": h["name"], "w": h["w"]} for s, h in config.HOLDINGS.items()],
         "portfolios": [{"name": p["name"], "tag": p["tag"], "sub": p["sub"], "w": p["w"], "path": paths[i]}
                        for i, p in enumerate(config.PORTFOLIOS)],
         "shocks": shocks,
         "ticker": ticker,
-        "stories": stories,
+        "stories": top,
         "stories_date": story_date,
     }
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w") as f:
         json.dump(data, f, indent=1)
-    print(f"Wrote {out_path}: {len(shocks)} shocks, {len(days)} days, {len(stories)} stories.")
+    print(f"Wrote {out_path}: {len(shocks) - 1} movers, {len(xdays)} days, {len(top)} stories.")
     return data
 
 
