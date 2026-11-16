@@ -7,331 +7,317 @@
 <meta name="description" content="This week's market moves, translated into what they did to common portfolios.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;700;800&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout idea: newspaper masthead with a market ticker, then the week's race between portfolios,
-   then pick-a-portfolio / pick-a-shock, then the Journal's top stories. Nothing to type. */
+/* Layout idea: one continuous sheet of green-bar printout paper lying on a sage desk.
+   Everything is printed straight onto the sheet, left-aligned, and sections are separated by
+   perforations. The green bands appear only where they line up with something: the report
+   header, the chart's value bands, and table rows. Losses are printed in red ink. */
 :root {
   color-scheme: light;
-  --page: #f4f4f1;
-  --surface: #fcfcfb;
-  --ink: #0b0b0b;
-  --ink-2: #52514e;
-  --muted: #74726d;
-  --line: #e1e0d9;
-  --axis: #c3c2b7;
-  --grid: #ebeae4;
-  --accent: #1c5cab;
-  --accent-wash: #e6eefa;
-  --gain: #2a78d6;
-  --loss: #e34948;
-  --up: #006300;
-  --down: #c0282a;
-  --tick-bg: #111111;
-  --tick-ink: #f0efec;
-  --tick-up: #5fd35f;
-  --tick-down: #ff7b7b;
-  --stock: #6250d6; --bond: #1baf7a; --alt: #eda100;
-  --news: #b8321f;
-  --warn-bg: #fdf1d3; --warn-ink: #6b4a00;
-  --crit-bg: #fbe1e1; --crit-ink: #8f1f1f;
-  --ok-bg: #dff3df;   --ok-ink: #0b5a0b;
-  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
-  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
-  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8f8d87;
-    --line: #2c2c2a; --axis: #45453f; --grid: #262624; --accent: #86b6ef; --accent-wash: #1b2a3f;
-    --gain: #3987e5; --loss: #e66767; --up: #0ca30c; --down: #e66767;
-    --tick-bg: #000000; --tick-ink: #f0efec;
-    --stock: #9085e9; --bond: #199e70; --alt: #c98500; --news: #f08a78;
-    --warn-bg: #3a2f10; --warn-ink: #f5cf6b; --crit-bg: #3d1a1a; --crit-ink: #f3a3a3; --ok-bg: #143214; --ok-ink: #8fdc8f;
-    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #0ca30c; --s7: #9085e9; --s8: #e66767;
-  }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8f8d87;
-  --line: #2c2c2a; --axis: #45453f; --grid: #262624; --accent: #86b6ef; --accent-wash: #1b2a3f;
-  --gain: #3987e5; --loss: #e66767; --up: #0ca30c; --down: #e66767;
-  --tick-bg: #000000; --tick-ink: #f0efec;
-  --stock: #9085e9; --bond: #199e70; --alt: #c98500; --news: #f08a78;
-  --warn-bg: #3a2f10; --warn-ink: #f5cf6b; --crit-bg: #3d1a1a; --crit-ink: #f3a3a3; --ok-bg: #143214; --ok-ink: #8fdc8f;
-  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #0ca30c; --s7: #9085e9; --s8: #e66767;
+  --desk: #c3cfc4;          /* the surface the paper lies on */
+  --paper: #f1f5ec;         /* the sheet */
+  --band: #dfe9dc;          /* the green bar */
+  --ink: #0f2a1f;           /* green-black printing ink */
+  --ink-2: #3a4f44;
+  --muted: #55695d;
+  --rule: #b3c3b5;
+  --stamp: #2f3fa6;         /* stamp-pad blue: links, focus, the date stamp */
+  --gain: #007a58;
+  --loss: #c93520;
+  --gain-on-ink: #7fe3b0;
+  --loss-on-ink: #ff8e78;
+  --pos: var(--gain);
+  --neg: var(--loss);
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300;
+  --display: "Besley", "Clarendon", "Rockwell", Georgia, serif;
+  --text: "Libre Franklin", "Franklin Gothic Medium", "Helvetica Neue", Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body { background: var(--page); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.45; }
+body { background: var(--desk); color: var(--ink); font: 400 15px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
 button { font: inherit; color: inherit; cursor: pointer; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-a { color: var(--accent); }
+a { color: var(--stamp); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+.pos { color: var(--pos); }
+.neg { color: var(--neg); }
+[hidden] { display: none !important; }
 
-/* ticker */
-.ticker { background: var(--tick-bg); color: var(--tick-ink); overflow-x: auto; }
-.ticker-in { display: flex; gap: 0; max-width: 1120px; margin: 0 auto; padding: 0 12px; white-space: nowrap; }
-.tk { display: flex; flex-direction: column; padding: 8px 14px; border-right: 1px solid rgba(255,255,255,0.12); font-variant-numeric: tabular-nums; }
-.tk:last-child { border-right: 0; }
-.tk .n { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.75; }
-.tk .v { font-size: 14px; font-weight: 600; }
-.tk .c { font-size: 12.5px; font-weight: 600; }
-.tk .c.up { color: var(--tick-up); } .tk .c.down { color: var(--tick-down); }
-.tick-note { max-width: 1120px; margin: 0 auto; padding: 4px 26px 0; font-size: 11.5px; color: var(--muted); }
+/* ---------- the sheet ---------- */
+.paper { --gut: 20px; position: relative; max-width: 1220px; margin: 0 auto; background: var(--paper); }
+@media (min-width: 900px) {
+  .paper { --gut: 64px; margin: 28px auto 48px; box-shadow: 0 1px 0 rgba(15, 42, 31, .12), 0 26px 48px -30px rgba(15, 42, 31, .5); }
+  /* tractor-feed strips: a hole every half inch, in step with the green bars */
+  .paper::before, .paper::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34px; pointer-events: none;
+    background: radial-gradient(circle at 50% 24px, var(--desk) 0 5px, transparent 5.6px) 0 0 / 34px 48px repeat-y; }
+  .paper::before { left: 0; border-right: 1px dashed var(--rule); }
+  .paper::after { right: 0; border-left: 1px dashed var(--rule); }
+}
+.demo { padding: 7px var(--gut); font-size: 13px; color: var(--ink-2); background: var(--band); border-bottom: 1px dashed var(--rule); }
 
-.wrap { max-width: 1120px; margin: 0 auto; padding: 14px 20px 48px; display: flex; flex-direction: column; gap: 18px; }
-header.mast { border-bottom: 3px double var(--ink); padding-bottom: 10px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px 20px; }
-header.mast h1 { font-family: var(--serif); font-size: 34px; margin: 0; letter-spacing: -0.01em; line-height: 1.1; }
-header.mast p { margin: 4px 0 0; color: var(--ink-2); max-width: 65ch; }
-.stamp { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
-h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
-h2 .step { display: inline-block; background: var(--accent); color: var(--surface); border-radius: 999px; width: 18px; height: 18px; line-height: 18px; text-align: center; font-size: 11px; margin-right: 6px; }
-.sub-h { font-size: 12.5px; color: var(--muted); font-weight: 600; margin: 14px 0 8px; }
-.sub-h:first-of-type { margin-top: 0; }
+/* ---------- the tape ---------- */
+.tape { height: 48px; display: flex; align-items: center; padding: 0 var(--gut); border-bottom: 1px solid var(--ink); }
+.tape-run { display: flex; overflow-x: auto; scrollbar-width: none; white-space: nowrap; font-size: 13px; font-variant-numeric: tabular-nums;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
+.tape-run::-webkit-scrollbar { display: none; }
+.tk { display: flex; gap: 7px; align-items: baseline; padding: 0 16px; border-left: 1px solid var(--rule); }
+.tk:first-child { padding-left: 0; border-left: 0; }
+.tk:last-child { padding-right: 48px; }
+.tk .n { color: var(--muted); }
+.tk .v { font-weight: 600; }
+.tk .c { font-weight: 600; }
 
-/* 5D race */
-.race-top { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-@media (max-width: 640px) { .race-top { grid-template-columns: 1fr; } }
-.wl { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
-.wl .ico { width: 30px; height: 30px; border-radius: 999px; display: grid; place-items: center; font-weight: 700; font-size: 15px; flex: none; }
-.wl.win .ico { background: var(--ok-bg); color: var(--ok-ink); }
-.wl.lose .ico { background: var(--crit-bg); color: var(--crit-ink); }
-.wl .lbl { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
-.wl .nm { font-family: var(--serif); font-size: 19px; font-weight: 700; line-height: 1.2; }
-.wl .why { font-size: 12.5px; color: var(--ink-2); }
-.wl .pct { margin-left: auto; font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
-.wl.win .pct { color: var(--up); } .wl.lose .pct { color: var(--down); }
-.legend5 { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-bottom: 8px; }
-.legend5 button { background: none; border: 0; padding: 2px 0; font-size: 12.5px; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
-.legend5 button i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
-.legend5 button[aria-pressed="true"] { color: var(--ink); font-weight: 700; }
+/* ---------- report header ---------- */
+.hero { padding: 38px var(--gut) 46px; background: repeating-linear-gradient(180deg, var(--band) 0 48px, transparent 48px 96px); }
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px 28px; flex-wrap: wrap; }
+.wordmark { font: 800 21px/1.2 var(--display); margin: 0; }
+.stamp { font: 700 11.5px/1.3 var(--text); text-transform: uppercase; letter-spacing: .09em; color: var(--stamp); text-align: center; white-space: nowrap;
+  border: 2px solid currentColor; border-radius: 6px; padding: 8px 13px 7px; outline: 1px solid currentColor; outline-offset: 3px; transform: rotate(-3deg); margin: 4px 6px 0 0; }
+.stamp b { display: block; font-size: 15px; letter-spacing: .05em; }
+.headline { font: 700 clamp(29px, 4.5vw, 54px)/1.09 var(--display); letter-spacing: -.018em; margin: 30px 0 0; text-wrap: balance; }
+.headline span { display: block; }
+.headline em { font-style: normal; white-space: nowrap; }
+.standfirst { margin: 20px 0 0; max-width: 64ch; color: var(--ink-2); font-size: 16px; }
+.loading { padding: 70px var(--gut); color: var(--ink-2); border-top: 1px solid var(--ink); }
+
+/* ---------- sections ---------- */
+.sec { padding: 36px var(--gut) 42px; border-top: 1px dashed var(--rule); }
+.sec.first { border-top: 1px solid var(--ink); }
+.sec-h { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 32px; margin: 0 0 20px; }
+.sec-h h2 { font: 700 25px/1.15 var(--display); letter-spacing: -.01em; margin: 0; }
+.sec-h p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 62ch; }
+.fine { font-size: 12.5px; color: var(--muted); margin: 10px 0 0; }
+
+/* ---------- the race chart ---------- */
+.legend5 { display: flex; flex-wrap: wrap; gap: 4px 4px; margin: 0 0 12px -8px; }
+.legend5 button { background: none; border: 0; border-radius: 3px; padding: 4px 10px 4px 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); }
+.legend5 button:hover { background: var(--band); }
+.legend5 button i { width: 16px; height: 3px; border-radius: 2px; background: var(--c); }
+.legend5 button[aria-pressed="true"] { background: var(--ink); color: var(--paper); font-weight: 600; }
 .chart5 { position: relative; }
-.chart5 svg { display: block; width: 100%; height: auto; overflow: visible; }
-.chart5 .tip { position: absolute; z-index: 5; pointer-events: none; background: var(--ink); color: var(--surface); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; line-height: 1.45; min-width: 190px; display: none; font-variant-numeric: tabular-nums; }
-.chart5 .tip .row { display: flex; justify-content: space-between; gap: 12px; }
-.chart5 .tip i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
-.note5 { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; }
+.chart5 svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--text); }
+.tip { position: absolute; z-index: 5; pointer-events: none; display: none; background: var(--ink); color: var(--paper); border-radius: 3px; padding: 8px 11px; font-size: 12.5px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.chart5 .tip { min-width: 210px; }
+.tip .row { display: flex; justify-content: space-between; gap: 14px; }
+.tip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; }
+@media (prefers-reduced-motion: no-preference) {
+  .ln.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .95s cubic-bezier(.3, .7, .2, 1) forwards; }
+  .pop.draw { opacity: 0; animation: pop .3s ease-out 1.05s forwards; }
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pop { to { opacity: 1; } }
 
-/* portfolio picker */
-.ports { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-@media (max-width: 960px) { .ports { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 600px) { .ports { grid-template-columns: repeat(2, 1fr); } }
-.port { text-align: left; background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
-.port:hover { background: var(--accent-wash); }
-.port[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); background: var(--accent-wash); }
-.port .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.port b { font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
-.port b i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex: none; }
-.port small { color: var(--muted); font-size: 12px; line-height: 1.3; }
-.tag { font-size: 11px; font-weight: 600; border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
-.tag.risk { background: var(--crit-bg); color: var(--crit-ink); }
-.tag.td { background: var(--accent-wash); color: var(--accent); border: 1px solid var(--line); }
-.mix { display: flex; height: 8px; border-radius: 4px; overflow: hidden; gap: 2px; background: var(--line); }
-.mix i { display: block; height: 100%; }
-.mix .st { background: var(--stock); } .mix .bd { background: var(--bond); } .mix .al { background: var(--alt); }
-.mixkey { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
-.mixkey i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+/* ---------- ruled cells: portfolios and shocks ---------- */
+.cells { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--ink); }
+.cell { --c2: var(--muted); background: var(--paper); border: 0; text-align: left; padding: 14px 14px 13px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cell:hover { background: var(--band); }
+.cell[aria-pressed="true"] { background: var(--ink); color: var(--paper); --c2: #a9c0b0; --pos: var(--gain-on-ink); --neg: var(--loss-on-ink); }
+.ports { grid-template-columns: repeat(6, 1fr); }
+@media (max-width: 1040px) { .ports { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 560px) { .ports { grid-template-columns: repeat(2, 1fr); } }
+.cell .nm { font-weight: 650; font-size: 14.5px; line-height: 1.25; display: flex; gap: 8px; align-items: baseline; }
+.cell .nm i { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1.5px var(--paper); }
+.cell .sub { color: var(--c2); font-size: 12.5px; line-height: 1.35; min-height: 2.7em; }
+.cell .comp { color: var(--c2); font-size: 12px; }
+.cell .foot { margin-top: auto; padding-top: 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.cell .wk { font: 800 18px/1 var(--display); font-variant-numeric: tabular-nums; }
+.cell .tagx { font-size: 11px; color: var(--c2); border: 1px solid currentColor; border-radius: 2px; padding: 0 5px; white-space: nowrap; }
+/* what's in it, drawn in ink: solid = stocks, hatched = bonds, dotted = crypto */
+.mix { display: flex; height: 11px; border: 1px solid currentColor; }
+.mix i, .key i { display: block; }
+.mix i + i { border-left: 1px solid currentColor; }
+.st { background: currentColor; }
+.bd { background: repeating-linear-gradient(135deg, currentColor 0 1.4px, transparent 1.4px 5px); }
+.al { background: radial-gradient(currentColor 1px, transparent 1.3px) 0 0 / 4px 4px; }
+.key { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+.key span { display: inline-flex; align-items: center; gap: 7px; }
+.key i { width: 18px; height: 11px; border: 1px solid currentColor; }
 
-/* shock picker */
-.scen { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-.scen.hist { grid-template-columns: repeat(3, 1fr); }
-@media (max-width: 1000px) { .scen { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 760px) { .scen { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) { .scen, .scen.hist { grid-template-columns: 1fr; } }
-.scen button { text-align: left; background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: start; }
-.scen button:hover { background: var(--accent-wash); }
-.scen button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); background: var(--accent-wash); }
-.scen .date { grid-column: 1 / -1; font-size: 11.5px; font-weight: 600; color: var(--news); text-transform: uppercase; letter-spacing: 0.04em; }
-.scen.hist .date { color: var(--muted); }
-.scen b { font-size: 14px; line-height: 1.3; }
-.scen small { grid-column: 1 / -1; color: var(--muted); font-size: 12px; line-height: 1.35; }
-.scen .res { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 17px; white-space: nowrap; }
-.res.neg { color: var(--loss); } .res.pos { color: var(--gain); }
+.scen { grid-template-columns: 1.2fr repeat(4, 1fr); }
+@media (max-width: 1040px) { .scen { grid-template-columns: repeat(2, 1fr); } .scen .cell:first-child { grid-column: 1 / -1; } }
+@media (max-width: 560px) { .scen { grid-template-columns: 1fr; } }
+.scen .cell { min-height: 172px; }
+.scen .ov { font-size: 12.5px; color: var(--c2); font-variant-numeric: tabular-nums; }
+.scen .hd { font-weight: 600; font-size: 14.5px; line-height: 1.32; }
+.scen .cell:first-child .hd { font: 700 20px/1.18 var(--display); }
+.scen .res { margin-top: auto; padding-top: 8px; font: 800 27px/1 var(--display); font-variant-numeric: tabular-nums; }
+.scen .ft { font-size: 12px; color: var(--c2); line-height: 1.35; }
 
-/* result */
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
-@media (max-width: 800px) { .two { grid-template-columns: 1fr; } }
-.story { border-left: 3px solid var(--news); padding: 2px 0 2px 12px; margin-bottom: 14px; }
-.story .k { font-size: 11.5px; font-weight: 600; color: var(--news); text-transform: uppercase; letter-spacing: 0.04em; }
-.story p { margin: 2px 0 0; color: var(--ink-2); font-size: 14px; max-width: 65ch; }
-.story.hist { border-left-color: var(--axis); }
-.story.hist .k { color: var(--muted); }
-.headline { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 20px; }
-.big { font-size: 56px; font-weight: 650; line-height: 1; letter-spacing: -0.02em; }
-.headline .sub { color: var(--ink-2); padding-bottom: 6px; }
-.headline .sub b { color: var(--ink); font-variant-numeric: tabular-nums; }
-.pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12.5px; font-weight: 600; }
-#sev { font-size: 18px; padding: 5px 16px; margin-top: 8px; letter-spacing: 0.01em; }
-.pill.ok { background: var(--ok-bg); color: var(--ok-ink); }
-.pill.warn { background: var(--warn-bg); color: var(--warn-ink); }
-.pill.crit { background: var(--crit-bg); color: var(--crit-ink); }
-.moves { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-.moves span { font-size: 12.5px; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.moves span b { color: var(--ink); font-weight: 600; }
-.moves span.est { border-style: dashed; }
-.rank { margin-top: 16px; }
-.rank h3 { font-size: 13px; margin: 0 0 6px; color: var(--ink); }
-.rank button { width: 100%; display: grid; grid-template-columns: 22px 1fr 110px 62px; gap: 10px; align-items: center; background: transparent; border: 0; border-top: 1px solid var(--line); padding: 7px 4px; text-align: left; font-size: 14px; }
-.rank button:hover { background: var(--accent-wash); }
-.rank .no { color: var(--muted); font-variant-numeric: tabular-nums; }
-.rank .nm small { display: block; color: var(--muted); font-size: 12px; }
-.rank .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
-.rank .go { grid-column: 2 / -1; display: none; }
-@media (max-width: 480px) { .rank button { grid-template-columns: 18px 1fr 70px 56px; } }
-.inside { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
-.inside b { color: var(--ink); font-variant-numeric: tabular-nums; }
-.estnote { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
-.chart { display: flex; flex-direction: column; gap: 2px; position: relative; }
-.bar-row { display: grid; grid-template-columns: 170px 1fr 58px; gap: 10px; align-items: center; padding: 4px 6px; border-radius: 6px; }
-.bar-row:hover, .bar-row:focus-visible { background: var(--accent-wash); }
-.bar-row .name { font-size: 14px; color: var(--ink-2); }
-.bar-row .name small { color: var(--muted); }
-.bar-row .val { text-align: right; font-variant-numeric: tabular-nums; font-size: 14px; }
-.track { position: relative; height: 16px; }
-.track::before { content: ""; position: absolute; left: 50%; top: -6px; bottom: -6px; width: 1px; background: var(--axis); }
-.bar { position: absolute; top: 0; height: 16px; }
+/* ---------- the result ---------- */
+.res-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+.came { border-left: 1px solid var(--rule); padding-left: 40px; margin-left: 40px; }
+@media (max-width: 860px) {
+  .res-grid { grid-template-columns: 1fr; }
+  .came { border-left: 0; padding-left: 0; margin: 30px 0 0; padding-top: 26px; border-top: 1px dashed var(--rule); }
+}
+.big-row { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+.big { font: 800 clamp(60px, 9.4vw, 104px)/.95 var(--display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.vstamp { font: 700 15px/1 var(--text); text-transform: uppercase; letter-spacing: .1em; border: 2.5px solid currentColor; border-radius: 5px; padding: 9px 13px 8px;
+  outline: 1px solid currentColor; outline-offset: 3px; transform: rotate(-4deg); }
+.dollars { margin: 16px 0 0; font-size: 16px; color: var(--ink-2); }
+.dollars b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.moves { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 0; }
+.moves span { border: 1px solid var(--rule); border-radius: 2px; padding: 2px 8px; font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.moves b { color: var(--ink); font-weight: 600; }
+.story { margin: 18px 0 0; max-width: 60ch; font-size: 15.5px; }
+.scale { margin: 30px 0 0; max-width: 540px; }
+.scale-h { font-size: 13px; font-weight: 600; margin-bottom: 26px; }
+.scale-track { position: relative; height: 24px; margin: 0 10px; background: var(--band); border-bottom: 1px solid var(--ink); }
+.scale-track .zero { position: absolute; left: 50%; top: -5px; bottom: 0; width: 1px; background: var(--ink); }
+.pt { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; padding: 0; border-radius: 50%; background: var(--c); border: 2px solid var(--paper); }
+.pt.me { width: 20px; height: 20px; margin: -10px 0 0 -10px; border-color: var(--ink); z-index: 2; }
+.me-lab { position: absolute; bottom: 100%; margin-bottom: 7px; transform: translateX(-50%); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.scale-ax { display: flex; justify-content: space-between; margin: 6px 0 0; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.came h3 { font: 700 18px/1.2 var(--display); margin: 0 0 12px; }
+.chart { position: relative; border-top: 1px solid var(--ink); }
+.bar-row { display: grid; grid-template-columns: minmax(110px, 180px) 1fr 58px; gap: 10px; align-items: center; padding: 8px 8px; }
+.bar-row:nth-child(even) { background: var(--band); }
+.bar-row .name { font-size: 13.5px; line-height: 1.25; }
+.bar-row .name small { color: var(--muted); font-size: 12px; }
+.bar-row .val { text-align: right; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.track { position: relative; height: 14px; }
+.track::before { content: ""; position: absolute; left: 50%; top: -5px; bottom: -5px; width: 1px; background: var(--ink); }
+.bar { position: absolute; top: 0; height: 14px; }
 .bar.neg { right: 50%; background: var(--loss); border-radius: 4px 0 0 4px; }
 .bar.pos { left: 50%; background: var(--gain); border-radius: 0 4px 4px 0; }
-.legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
-.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
-@media (max-width: 480px) { .bar-row { grid-template-columns: 112px 1fr 52px; } .big { font-size: 44px; } }
-.chart .tip { position: absolute; z-index: 5; pointer-events: none; background: var(--ink); color: var(--surface); border-radius: 6px; padding: 7px 10px; font-size: 12.5px; line-height: 1.4; max-width: 240px; display: none; font-variant-numeric: tabular-nums; }
+.chart .tip { max-width: 250px; }
+.inside { margin: 24px 0 0; }
+.inside div { display: grid; grid-template-columns: 124px 1fr; gap: 14px; padding: 11px 0; border-top: 1px solid var(--rule); }
+.inside dt { font-weight: 600; font-size: 13px; }
+.inside dd { margin: 0; font-size: 14px; color: var(--ink-2); }
+.inside b { color: var(--ink); font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .inside div { grid-template-columns: 1fr; gap: 2px; } .bar-row { grid-template-columns: 96px 1fr 52px; } }
 
-/* WSJ stories */
-.wsj-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--ink); padding-bottom: 8px; margin-bottom: 4px; }
-.wsj-head h2 { margin: 0; font-family: var(--serif); text-transform: none; letter-spacing: 0; font-size: 22px; color: var(--ink); font-weight: 700; }
-.wsj-head span { font-size: 12px; color: var(--muted); }
-.stories { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 0 22px; }
-@media (max-width: 860px) { .stories { grid-template-columns: 1fr; } }
-.st { padding: 14px 0; border-bottom: 1px solid var(--line); }
-.st.lead { grid-row: span 2; border-right: 1px solid var(--line); padding-right: 22px; }
-@media (max-width: 860px) { .st.lead { border-right: 0; padding-right: 0; grid-row: auto; } }
-.st .kick { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; color: var(--news); }
-.st h3 { font-family: var(--serif); font-size: 18px; line-height: 1.25; margin: 4px 0 6px; text-wrap: balance; }
-.st.lead h3 { font-size: 26px; }
-.st p { margin: 0; color: var(--ink-2); font-size: 14px; }
-.st .meta { margin-top: 8px; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
-.st .meta .mv { border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; font-weight: 600; color: var(--ink-2); }
+/* ---------- stories ---------- */
+.stories { display: grid; grid-template-columns: 1.5fr 1fr 1fr; column-gap: 32px; }
+.st-item { padding: 16px 0 18px; border-top: 1px solid var(--rule); }
+.st-item.lead { grid-row: span 2; border-top: 1px solid var(--ink); padding-right: 32px; border-right: 1px solid var(--rule); }
+.st-item:nth-child(2), .st-item:nth-child(3) { border-top-color: var(--ink); }
+@media (max-width: 860px) { .stories { grid-template-columns: 1fr; } .st-item.lead { grid-row: auto; padding-right: 0; border-right: 0; } .st-item:nth-child(2), .st-item:nth-child(3) { border-top-color: var(--rule); } }
+.st-item .kick { font-size: 12.5px; font-weight: 700; color: var(--stamp); }
+.st-item h3 { font: 700 19px/1.25 var(--display); margin: 4px 0 7px; text-wrap: balance; }
+.st-item.lead h3 { font-size: clamp(24px, 2.6vw, 31px); line-height: 1.15; letter-spacing: -.01em; }
+.st-item p { margin: 0; color: var(--ink-2); font-size: 14.5px; max-width: 60ch; }
+.st-item .meta { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px 8px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.st-item .mv { border: 1px solid var(--rule); border-radius: 2px; padding: 0 6px; color: var(--ink-2); }
 
+/* ---------- small print ---------- */
 details { font-size: 13.5px; color: var(--ink-2); }
-summary { cursor: pointer; color: var(--accent); font-weight: 600; }
-.tablewrap { overflow-x: auto; margin-top: 8px; }
+summary { font: 700 18px/1.3 var(--display); color: var(--ink); cursor: pointer; }
+details h4 { font: 600 14px/1.3 var(--text); color: var(--ink); margin: 22px 0 6px; }
+details ul { margin: 8px 0 0; padding-left: 18px; max-width: 78ch; }
+details li { margin-bottom: 5px; }
+.tablewrap { overflow-x: auto; margin-top: 8px; border-top: 1px solid var(--ink); }
 table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
-th, td { text-align: right; padding: 5px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th, td { text-align: right; padding: 7px 10px; white-space: nowrap; }
 th:first-child, td:first-child { text-align: left; }
-td.e { font-style: italic; color: var(--muted); }
-th { color: var(--muted); font-weight: 600; font-size: 12.5px; }
-details ul { margin: 8px 0 0; padding-left: 18px; max-width: 75ch; }
-details li { margin-bottom: 4px; }
-details h4 { margin: 16px 0 4px; font-size: 13px; color: var(--ink); }
-
-.demo-bar { background: var(--warn-bg); color: var(--warn-ink); font-size: 13px; text-align: center; padding: 6px 12px; }
-.loading, .load-err { padding: 60px 20px; text-align: center; color: var(--ink-2); }
-.st .src { color: var(--muted); }
-.scen-group { margin-bottom: 14px; }
-.scen-group:last-child { margin-bottom: 0; }
-#content:not([hidden]) { display: contents; }
+th { font-weight: 600; font-size: 12.5px; color: var(--ink); border-bottom: 1px solid var(--rule); }
+tr:nth-child(odd) td { background: var(--band); }
+.eor { margin: 34px 0 0; text-align: center; color: var(--muted); font-size: 13px; letter-spacing: .28em; }
 </style>
 </head>
 <body>
-<div class="demo-bar" id="demo" hidden>Demo data: sample week of Nov 9–13, 2026. The live site replaces this automatically.</div>
-<div class="ticker" aria-label="Biggest market moves this week"><div class="ticker-in" id="ticker"></div></div>
-<div class="tick-note" id="tick-note"></div>
+<div class="paper">
+  <div class="demo" id="demo" hidden>Demo data: a sample week, Nov 9 to 13, 2026. The live site replaces this automatically.</div>
+  <div class="tape" aria-label="Market moves over the past five trading days"><div class="tape-run" id="ticker"></div></div>
 
-<div class="wrap" id="app">
-  <header class="mast">
-    <div>
-      <h1>Portfolio Shock Check</h1>
-      <p>This week's market news, translated into what it did to a portfolio like yours.</p>
+  <header class="hero">
+    <div class="hero-top">
+      <h1 class="wordmark">Portfolio Shock Check</h1>
+      <div class="stamp" id="stamp" hidden></div>
     </div>
-    <div class="stamp" id="stamp">Loading…</div>
+    <p class="headline" id="headline">This week's market news, translated into what it did to a portfolio like yours.</p>
+    <p class="standfirst" id="standfirst"></p>
   </header>
 
   <div class="loading" id="loading">Loading the latest market data…</div>
 
-  <div id="content" hidden>
-  <section class="card" aria-labelledby="h-race">
-    <h2 id="h-race">How every portfolio fared this week (5D)</h2>
-    <div class="race-top">
-      <div class="wl win"><span class="ico" aria-hidden="true">▲</span><div><div class="lbl">Biggest winner</div><div class="nm" id="win-n"></div><div class="why" id="win-w"></div></div><div class="pct" id="win-p"></div></div>
-      <div class="wl lose"><span class="ico" aria-hidden="true">▼</span><div><div class="lbl">Biggest loser</div><div class="nm" id="lose-n"></div><div class="why" id="lose-w"></div></div><div class="pct" id="lose-p"></div></div>
-    </div>
-    <div class="legend5" id="legend5" role="group" aria-label="Portfolios on the chart"></div>
-    <div class="chart5" id="chart5"><div class="tip" id="tip5"></div></div>
-    <p class="note5">Cumulative return from last week's close, using real fund prices. Hover or tap for each day. Click a name to highlight it.</p>
-  </section>
+  <main id="content" hidden>
+    <section class="sec first" aria-labelledby="h-race">
+      <div class="sec-h"><h2 id="h-race">How every portfolio fared</h2><p id="drivers"></p></div>
+      <div class="legend5" id="legend5" role="group" aria-label="Portfolios on the chart"></div>
+      <div class="chart5" id="chart5"><div class="tip" id="tip5"></div></div>
+      <p class="fine">Cumulative return from the starting close, using real fund prices. Hover or tap for each day. Click a name to follow it down the page.</p>
+    </section>
 
-  <section class="card" aria-labelledby="h-port">
-    <h2 id="h-port"><span class="step">1</span>Pick the portfolio closest to yours</h2>
-    <div class="ports" id="ports" role="group" aria-label="Model portfolios"></div>
-    <div class="mixkey"><span><i style="background:var(--stock)"></i>Stocks</span><span><i style="background:var(--bond)"></i>Bonds</span><span><i style="background:var(--alt)"></i>Crypto</span></div>
-  </section>
-
-  <section class="card" aria-labelledby="h-shock">
-    <h2 id="h-shock"><span class="step">2</span>Pick a market shock</h2>
-    <div class="scen-group"><div class="sub-h">This week, day by day</div><div class="scen" id="scen-week" role="group" aria-label="This week"></div></div>
-    <div class="scen-group" id="news-group"><div class="sub-h">In the news, isolated</div><div class="scen" id="scen-news" role="group" aria-label="News shocks"></div></div>
-  </section>
-
-  <div class="two">
-    <section class="card" aria-live="polite">
-      <h2>What it did to you</h2>
-      <div class="story" id="story"><div class="k" id="story-k"></div><p id="story-p"></p></div>
-      <div class="headline">
-        <div class="big" id="big"></div>
-        <div class="sub"><b id="dollars"></b> on every $100,000<br><span class="pill" id="sev"></span></div>
+    <section class="sec" aria-labelledby="h-port">
+      <div class="sec-h">
+        <h2 id="h-port">1. Pick the portfolio closest to yours</h2>
+        <div class="key" aria-hidden="true"><span><i class="st"></i>Stocks</span><span><i class="bd"></i>Bonds</span><span><i class="al"></i>Crypto</span></div>
       </div>
-      <div class="moves" id="moves"></div>
-      <p class="estnote" id="estnote"></p>
-      <div class="rank" id="rank"></div>
-      <p class="inside" id="inside"></p>
+      <div class="cells ports" id="ports" role="group" aria-label="Model portfolios"></div>
+      <p class="fine">The figure in each box is that portfolio's return over the past five trading days.</p>
     </section>
 
-    <section class="card">
-      <h2>Where it came from</h2>
-      <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
-      <div class="legend"><span><i style="background:var(--loss)"></i>Loss</span><span><i style="background:var(--gain)"></i>Gain</span><span>Points of total return</span></div>
+    <section class="sec" aria-labelledby="h-shock">
+      <div class="sec-h"><h2 id="h-shock">2. Pick a market shock</h2><p id="scen-note"></p></div>
+      <div class="cells scen" id="scen" role="group" aria-label="Your week and its biggest movers"></div>
     </section>
-  </div>
 
-  <section class="card" aria-labelledby="h-wsj">
-    <div class="wsj-head"><h2 id="h-wsj">Top market stories</h2><span id="stories-date"></span></div>
-    <div class="stories" id="stories"></div>
-  </section>
+    <section class="sec" aria-labelledby="h-res" aria-live="polite">
+      <div class="sec-h"><h2 id="h-res">What it did to you</h2><p id="story-k"></p></div>
+      <div class="res-grid">
+        <div>
+          <div class="big-row"><div class="big" id="big"></div><div class="vstamp" id="sev"></div></div>
+          <p class="dollars"><b id="dollars"></b> on every $100,000</p>
+          <div class="moves" id="moves"></div>
+          <p class="story" id="story-p"></p>
+          <p class="fine" id="estnote"></p>
+          <div class="scale" id="scale"></div>
+        </div>
+        <div class="came">
+          <h3>Where it came from</h3>
+          <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
+          <p class="fine">Points of total return, by holding. Red bars are losses.</p>
+          <dl class="inside" id="inside"></dl>
+        </div>
+      </div>
+    </section>
 
-  <section class="card">
-    <details>
-      <summary>Sources and how the numbers are calculated</summary>
-      <h4>Where the data comes from</h4>
-      <ul>
-        <li>Fund and stock prices: <a href="https://finnhub.io">Finnhub</a>, every 15 minutes during market hours. Bitcoin: <a href="https://www.coinbase.com">Coinbase</a>. Treasury yields: <a href="https://fred.stlouisfed.org">FRED</a> (daily, published with a one-day lag).</li>
-        <li>Top stories: picked from Finnhub's news feed once a day after the close and summarized by Claude in its own words. Each links to the original article.</li>
-        <li>Each asset class is priced with a real fund: <span id="asset-list"></span>.</li>
-      </ul>
-      <h4>Model portfolios (percent of portfolio)</h4>
-      <div class="tablewrap"><table id="ptable"></table></div>
-      <ul>
-        <li>Retirement Fund 2060 uses the underlying-fund weights in Vanguard's Target Retirement 2060 <a href="https://workplace.vanguard.com/iippdf/pdfs/FS1691.pdf">fact sheet dated September 30, 2026</a>. Retirement Fund Income uses the fund's stated 30/70 stock/bond split. These portfolios mirror the funds' allocations; they are not the funds themselves.</li>
-        <li>The 5-day chart buys each portfolio at last week's close and holds it. Weekly and daily shocks use the same fund prices.</li>
-      </ul>
-      <h4>News shocks</h4>
-      <ul id="srclist"></ul>
-      <ul>
-        <li>News shocks isolate one effect. Bond moves use: price change ≈ −duration × yield change + ½ × convexity × (yield change)². Nvidia shocks use each fund's Nvidia weight (look-through).</li>
-        <li>Educational project, not investment advice.</li>
-      </ul>
-    </details>
-  </section>
-  </div>
+    <section class="sec" aria-labelledby="h-news">
+      <div class="sec-h"><h2 id="h-news">Top market stories</h2><p id="stories-date"></p></div>
+      <div class="stories" id="stories"></div>
+    </section>
+
+    <footer class="sec">
+      <details>
+        <summary>Sources and how the numbers are calculated</summary>
+        <h4>Where the data comes from</h4>
+        <ul>
+          <li>Fund and stock prices: <a href="https://finnhub.io">Finnhub</a>, every 15 minutes during market hours. Bitcoin: <a href="https://www.coinbase.com">Coinbase</a>. Treasury yields: <a href="https://fred.stlouisfed.org">FRED</a> (daily, published with a one-day lag).</li>
+          <li>Top stories: picked from Finnhub's news feed once a day after the close and summarized by Claude in its own words. Each links to the original article.</li>
+          <li>Each asset class is priced with a real fund: <span id="asset-list"></span>.</li>
+        </ul>
+        <h4>Model portfolios (percent of portfolio)</h4>
+        <div class="tablewrap"><table id="ptable"></table></div>
+        <ul>
+          <li>Retirement Fund 2060 uses the underlying-fund weights in Vanguard's Target Retirement 2060 <a href="https://workplace.vanguard.com/iippdf/pdfs/FS1691.pdf">fact sheet dated September 30, 2026</a>. Retirement Fund Income uses the fund's stated 30/70 stock/bond split. These portfolios mirror the funds' allocations; they are not the funds themselves.</li>
+          <li>The five-day chart buys each portfolio at the starting close and holds it. The week and each mover use the same fund prices.</li>
+        </ul>
+        <h4>How the biggest movers are chosen</h4>
+        <ul>
+          <li>For every company in the table below, the pipeline takes its five-day move × its weight inside each fund × that fund's share of the portfolio. Market forces are measured with real funds: interest rates with the bond funds, bitcoin, international stocks (VXUS), and "the rest of the U.S. market", which is what is left of each stock fund's move after taking out those companies.</li>
+          <li>Each portfolio shows the four that moved it most, gains or losses. Each mover shows only its own effect: everything else is held still.</li>
+          <li>Mover stories are written by Claude after each close, using only that company's headlines from Finnhub. Each links to its source.</li>
+        </ul>
+        <h4>What's inside the stock funds (percent of each fund)</h4>
+        <div class="tablewrap"><table id="htable"></table></div>
+        <ul>
+          <li>S&amp;P 500: SPDR S&amp;P 500 holdings, Nov 9, 2026 (Micron, Tesla: Oct 2). Nasdaq-100: Invesco QQQ SEC filing, June 30, 2026 (Meta estimated). Total market: estimated at 0.85 × the S&amp;P 500 weight. Weights drift with prices.</li>
+          <li>Bond sensitivity (DV01) uses typical durations: short Treasuries 1.9 years, U.S. bonds 6.0, international bonds 7.0 (half-sensitive to U.S. yields).</li>
+          <li>Educational project, not investment advice.</li>
+        </ul>
+      </details>
+      <p class="eor" aria-hidden="true">* * * End of report * * *</p>
+    </footer>
+  </main>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
 const PV = 100000, MINUS = "−";
-const state = { port: 0, scen: 0 };
-let D = null, PATHS = [];
+const state = { port: 0, scen: "week" };
+let D = null, PATHS = [], drawn = false;
 
 // ---------- formatting ----------
 function pct(x, d = 1) { const v = x * 100, t = Math.abs(v).toFixed(d); if (Number(t) === 0) return (0).toFixed(d) + "%"; return (v < 0 ? MINUS : "+") + t + "%"; }
@@ -342,19 +328,38 @@ function sp(x) { const r = Math.round(x * 100) / 100; return (r < 0 ? MINUS : r 
 function plain(x) { return (Math.round(x * 10) / 10).toString(); }
 function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 function moveText(m) { return m.unit === "bp" ? bp(m.value) : sp(m.value); }
+function tidy(s) { return String(s ?? "").replace(/-(\d)/g, MINUS + "$1").replace(/ · /g, ", ").replace("Other S&P 500 stocks", "Other stocks"); }
+function tone(v) { return v < -0.00005 ? "neg" : v > 0.00005 ? "pos" : ""; }
+function upDown(v) { return (v < 0 ? "down " : "up ") + Math.abs(v * 100).toFixed(1) + "%"; }
 
 // ---------- model: weights × asset returns ----------
 function run(w, sh) {
-  let total = 0, nvdaW = 0, dv01 = 0, bondW = 0;
+  let total = 0, dv01 = 0, bondW = 0;
   const rows = D.assets.map(a => {
     const wt = (w[a.id] || 0) / 100, r = sh.returns[a.id] || 0, c = wt * r;
-    total += c; nvdaW += wt * (a.nvda_w || 0);
+    total += c;
     if (a.kind === "bd") { bondW += wt; dv01 += wt * (a.dv01_years || 0) * PV / 10000; }
     return { a, wt, ret: r, c };
   });
-  return { rows, total, nvdaW, dv01, bondW };
+  return { rows, total, dv01, bondW };
 }
 function kindShare(w, kind) { return D.assets.filter(a => a.kind === kind).reduce((s, a) => s + (w[a.id] || 0), 0); }
+// how much of the portfolio a mover touches, e.g. "Nvidia is 6.6% of this portfolio"
+function exposure(w, sh) {
+  if (sh.weights) return Object.entries(sh.weights).reduce((s, [fid, cw]) => s + (w[fid] || 0) / 100 * cw / 100, 0);
+  return Object.keys(sh.returns).reduce((s, fid) => s + (w[fid] || 0) / 100, 0);
+}
+function stakes(w) {
+  return D.holdings.map(h => ({ h, v: Object.entries(h.w).reduce((s, [fid, cw]) => s + (w[fid] || 0) / 100 * cw / 100, 0) }))
+    .filter(x => x.v > 0).sort((a, b) => b.v - a.v);
+}
+// the week first, then the 4 movers that moved this portfolio most
+function shocksFor(p) {
+  const week = D.shocks.find(s => s.kind === "week") || D.shocks[0];
+  const movers = D.shocks.filter(s => s.kind === "mover").map(s => ({ s, v: run(p.w, s).total }))
+    .filter(o => Math.abs(o.v) > 0.000005).sort((a, b) => Math.abs(b.v) - Math.abs(a.v)).slice(0, 4).map(o => o.s);
+  return [week, ...movers];
+}
 
 // ---------- load ----------
 async function load() {
@@ -365,130 +370,129 @@ async function load() {
     if (D && fresh.generated_at === D.generated_at) return;
     D = fresh; build(); render();
   } catch (e) {
-    if (!D) { $("loading").className = "load-err"; $("loading").textContent = "Could not load market data. If you opened this file directly, run it through a local server (see README)."; }
+    if (!D) $("loading").textContent = "Could not load market data. If you opened this file directly, run it through a local server (see the README).";
   }
 }
 
 function build() {
+  D.holdings = D.holdings || [];
   D.portfolios.forEach((p, i) => p.color = `var(--s${i + 1})`);
   PATHS = D.portfolios.map(p => p.path);
   state.port = Math.min(state.port, D.portfolios.length - 1);
-  state.scen = Math.min(state.scen, D.shocks.length - 1);
   $("loading").hidden = true; $("content").hidden = false;
   $("demo").hidden = !D.demo;
 
+  // the date stamp
   const t = D.last_quote ? new Date(D.last_quote) : new Date(D.generated_at);
- const day = D.price_day ? new Date(D.price_day + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) : "";
- $("stamp").textContent = D.price_day_live
-    ? "Live prices · updated " + t.toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) + " ET"
-    : day ? "Closing prices, " + day : "Prices as of " + t.toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" });
-  $("tick-note").textContent = D.week_label + ". Change is since last week's close.";
+  const day = D.price_day ? new Date(D.price_day + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+    : t.toLocaleDateString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" });
+  $("stamp").innerHTML = D.price_day_live
+    ? `Live prices<b>${t.toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" })} ET</b>`
+    : `Closing prices<b>${esc(day)}</b>`;
+  $("stamp").hidden = false;
 
+  // the tape
   $("ticker").innerHTML = D.ticker.map(k => {
-    const down = k.change < 0, val = k.is_rate ? k.value.toFixed(3) + "%" : k.value >= 1000 ? "$" + Math.round(k.value).toLocaleString("en-US") : "$" + k.value.toFixed(2);
-    const chg = k.unit === "bp" ? bp(k.change) : (down ? MINUS : "+") + Math.abs(k.change).toFixed(2) + "%";
-    return `<div class="tk"><span class="n">${esc(k.name)}</span><span class="v">${val}</span><span class="c ${down ? "down" : "up"}">${down ? "▼" : "▲"} ${chg}</span></div>`;
+    const down = k.change < 0;
+    const val = k.is_rate ? k.value.toFixed(3) + "%" : k.value >= 1000 ? Math.round(k.value).toLocaleString("en-US") : k.value.toFixed(2);
+    const chg = (down ? MINUS : "+") + (k.unit === "bp" ? Math.abs(k.change).toFixed(1) + " bp" : Math.abs(k.change).toFixed(2) + "%");
+    return `<div class="tk"><span class="n">${esc(k.name)}</span><span class="v">${val}</span><span class="c ${down ? "neg" : "pos"}">${down ? "▼" : "▲"} ${chg}</span></div>`;
   }).join("");
 
+  // the headline: who won the week, who lost it
+  const end = PATHS.map(p => p[p.length - 1]);
+  let wi = 0, li = 0; end.forEach((v, i) => { if (v > end[wi]) wi = i; if (v < end[li]) li = i; });
+  const W = D.portfolios[wi], L = D.portfolios[li];
+  $("headline").innerHTML = `<span>${esc(W.name)} ${end[wi] > 0 ? "won the week" : "held up best"}, <em class="${tone(end[wi])}">${upDown(end[wi])}</em>.</span>` +
+    (li !== wi ? `<span>${esc(L.name)} ${end[li] < 0 ? "lost the most" : "gained the least"}, <em class="${tone(end[li])}">${upDown(end[li])}</em>.</span>` : "");
+  $("standfirst").textContent = `This week's market news, translated into what it did to a portfolio like yours. ${tidy(D.week_label || "")}.`;
+  const why = i => { const top = shocksFor(D.portfolios[i])[1]; return top ? `${D.portfolios[i].name}: mostly ${top.name.replace(/^The /, "the ")}, ${pts(run(D.portfolios[i].w, top).total)} points.` : ""; };
+  $("drivers").textContent = [why(wi), li !== wi ? why(li) : ""].filter(Boolean).join(" ");
+
+  // portfolio cells and chart legend
   $("ports").innerHTML = ""; $("legend5").innerHTML = "";
   D.portfolios.forEach((p, i) => {
-    const b = document.createElement("button");
-    b.className = "port"; b.type = "button";
-    const st = kindShare(p.w, "st"), bd = kindShare(p.w, "bd"), al = kindShare(p.w, "al");
+    const st = kindShare(p.w, "st"), bd = kindShare(p.w, "bd"), al = kindShare(p.w, "al"), wk = end[i];
     const tag = { risk: "High risk", tech: "Tech tilt", td: "Target-date" }[p.tag];
-    b.innerHTML = `<span class="top"><b><i style="background:${p.color}"></i>${esc(p.name)}</b>${tag ? `<span class="tag ${p.tag === "td" ? "td" : "risk"}">${tag}</span>` : ""}</span>
+    const comp = [`${Math.round(st)}% stocks`, bd ? `${Math.round(bd)}% bonds` : "", al ? `${Math.round(al)}% crypto` : ""].filter(Boolean).join(", ");
+    const b = document.createElement("button");
+    b.className = "cell"; b.type = "button"; b.style.setProperty("--c", p.color);
+    b.innerHTML = `<span class="nm"><i></i>${esc(p.name)}</span><span class="sub">${esc(p.sub)}</span>
       <span class="mix" aria-hidden="true">${st ? `<i class="st" style="flex:${st}"></i>` : ""}${bd ? `<i class="bd" style="flex:${bd}"></i>` : ""}${al ? `<i class="al" style="flex:${al}"></i>` : ""}</span>
-      <small>${esc(p.sub)} ${Math.round(st)}% stocks${bd ? `, ${Math.round(bd)}% bonds` : ""}${al ? `, ${Math.round(al)}% crypto` : ""}.</small>`;
+      <span class="comp">${comp}</span>
+      <span class="foot"><span class="wk ${tone(wk)}">${pct(wk)}</span>${tag ? `<span class="tagx">${tag}</span>` : ""}</span>`;
     b.addEventListener("click", () => { state.port = i; render(); });
     $("ports").appendChild(b);
     const l = document.createElement("button");
-    l.type = "button"; l.innerHTML = `<i style="background:${p.color}"></i>${esc(p.name)}`;
+    l.type = "button"; l.style.setProperty("--c", p.color); l.innerHTML = `<i></i>${esc(p.name)}`;
     l.addEventListener("click", () => { state.port = i; render(); });
     $("legend5").appendChild(l);
   });
 
-  $("scen-week").innerHTML = ""; $("scen-news").innerHTML = "";
-  D.shocks.forEach((sh, i) => {
-    const b = document.createElement("button");
-    b.type = "button"; b.dataset.i = i;
-    b.innerHTML = `<span class="date">${esc(sh.date)}</span><b>${esc(sh.name)}</b><span class="res"></span><small>${esc(sh.card)}</small>`;
-    b.addEventListener("click", () => { state.scen = i; render(); });
-    $(sh.kind === "curated" ? "scen-news" : "scen-week").appendChild(b);
-  });
-  $("news-group").hidden = !D.shocks.some(s => s.kind === "curated");
-
-  $("stories-date").textContent = D.stories_date ? "Picked and summarized after the close, " + new Date(D.stories_date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
-  $("stories").innerHTML = D.stories.length ? D.stories.map((s, i) => `<article class="st${i === 0 ? " lead" : ""}">
+  // stories
+  $("stories-date").textContent = D.stories_date ? "Picked and summarized after the close on " + new Date(D.stories_date + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }) + "." : "";
+  $("stories").innerHTML = D.stories.length ? D.stories.map((s, i) => `<article class="st-item${i === 0 ? " lead" : ""}">
     <div class="kick">${esc(s.kicker)}</div><h3>${esc(s.headline)}</h3><p>${esc(s.summary)}</p>
     <div class="meta">${(s.tickers || "").split(",").filter(Boolean).map(m => `<span class="mv">${esc(m)}</span>`).join("")}
-    ${s.url ? `<span class="src">Source: <a href="${esc(s.url)}">${esc(s.source || "article")}</a></span>` : ""}</div></article>`).join("")
-    : `<p class="estnote">Today's stories appear after the market close.</p>`;
+    ${s.url ? `<span>Source: <a href="${esc(s.url)}">${esc(s.source || "article")}</a></span>` : ""}</div></article>`).join("")
+    : `<p class="fine">Today's stories appear after the market close.</p>`;
 
+  // small print
   $("asset-list").textContent = D.assets.map(a => `${a.name} = ${a.symbol}`).join(", ");
   const ids = D.assets.map(a => a.id);
   $("ptable").innerHTML = "<tr><th>Portfolio</th>" + D.assets.map(a => `<th>${esc(a.name)}</th>`).join("") + "</tr>" +
     D.portfolios.map(p => `<tr><td>${esc(p.name)}</td>` + ids.map(id => `<td>${p.w[id] ? plain(p.w[id]) : "–"}</td>`).join("") + "</tr>").join("");
-  $("srclist").innerHTML = D.shocks.filter(s => s.kind === "curated").map(s =>
-    `<li>${esc(s.name)}: ${(s.sources || []).map(([t, u]) => `<a href="${esc(u)}">${esc(t)}</a>`).join(", ")}.</li>`).join("") || "<li>None this week.</li>";
-
-  const end = PATHS.map(p => p[p.length - 1]);
-  let wi = 0, li = 0; end.forEach((v, i) => { if (v > end[wi]) wi = i; if (v < end[li]) li = i; });
-  const weekShock = D.shocks.find(s => s.kind === "week");
-  const why = i => {
-    if (!weekShock) return "";
-    const top = run(D.portfolios[i].w, weekShock).rows.filter(x => x.wt > 0).sort((a, b) => Math.abs(b.c) - Math.abs(a.c))[0];
-    return top ? `Biggest driver: ${top.a.name}, ${pts(top.c)} points.` : "";
-  };
-  $("win-n").textContent = D.portfolios[wi].name; $("win-p").textContent = pct(end[wi]); $("win-w").textContent = why(wi);
-  $("lose-n").textContent = D.portfolios[li].name; $("lose-p").textContent = pct(end[li]); $("lose-w").textContent = why(li);
+  const fids = [["sp", "S&P 500"], ["ndx", "Nasdaq-100"], ["ustm", "Total market"]];
+  $("htable").innerHTML = "<tr><th>Company</th>" + fids.map(f => `<th>${f[1]}</th>`).join("") + "</tr>" +
+    D.holdings.map(h => `<tr><td>${esc(h.name)} (${esc(h.symbol)})</td>` + fids.map(([id]) => `<td>${h.w[id] ? h.w[id].toFixed(2) : "–"}</td>`).join("") + "</tr>").join("");
 }
 
-// ---------- 5D line chart ----------
+// ---------- the five-day chart, drawn on green-bar value bands ----------
 function drawRace() {
   const box = $("chart5"), tip = $("tip5"), XL = D.x_labels;
   box.querySelectorAll("svg").forEach(n => n.remove());
-  const W = Math.max(320, box.clientWidth), narrow = W < 560;
-  const H = narrow ? 300 : 340, padL = 44, padR = narrow ? 14 : 176, padT = 12, padB = 28;
+  const W = Math.max(320, box.clientWidth), narrow = W < 600;
+  const H = narrow ? 300 : 380, padL = 50, padR = narrow ? 12 : 200, padT = 10, padB = 30;
   const all = PATHS.flat().concat([0]), lo = Math.min(...all), hi = Math.max(...all);
   const span = hi - lo, step = span > 0.08 ? 0.02 : span > 0.03 ? 0.01 : 0.005;
-  const yMin = Math.floor(lo / step) * step, yMax = Math.max(yMin + step, Math.ceil(hi / step) * step);
-  const n = Math.max(1, XL.length - 1);
+  const i0 = Math.floor(lo / step + 1e-9), i1 = Math.max(i0 + 1, Math.ceil(hi / step - 1e-9));
+  const yMin = i0 * step, yMax = i1 * step, n = Math.max(1, XL.length - 1), last = XL.length - 1;
   const x = i => padL + i * (W - padL - padR) / n;
   const y = v => padT + (yMax - v) / (yMax - yMin) * (H - padT - padB);
-  const dec = step < 0.01 ? 1 : 0;
-  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative return of each portfolio this week">`;
-  for (let v = yMin; v <= yMax + 1e-9; v += step) {
-    const yy = y(v), zero = Math.abs(v) < 1e-9;
-    s += `<line x1="${padL}" x2="${W - padR}" y1="${yy}" y2="${yy}" stroke="${zero ? "var(--axis)" : "var(--grid)"}" stroke-width="1"/>`;
-    s += `<text x="${padL - 8}" y="${yy + 4}" text-anchor="end" font-size="11" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${pct(v, dec)}</text>`;
-  }
-  XL.forEach((l, i) => { s += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="var(--muted)">${esc(l)}</text>`; });
-  const last = XL.length - 1;
+  const dec = step < 0.01 ? 1 : 0, anim = drawn ? "" : " draw";
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative return of each portfolio over the past five trading days">`;
+  for (let k = i0; k < i1; k++) if (((k % 2) + 2) % 2 === 0)
+    s += `<rect x="${padL}" y="${y((k + 1) * step)}" width="${W - padL - padR}" height="${y(k * step) - y((k + 1) * step)}" fill="var(--band)"/>`;
+  for (let k = i0; k <= i1; k++)
+    s += `<text x="${padL - 9}" y="${y(k * step) + 4}" text-anchor="end" font-size="11.5" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${pct(k * step, dec)}</text>`;
+  s += `<line x1="${padL}" x2="${W - padR}" y1="${y(0)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="1"/>`;
+  XL.forEach((l, i) => { s += `<text x="${x(i)}" y="${H - 9}" text-anchor="${i === 0 ? "start" : i === last && narrow ? "end" : "middle"}" font-size="11.5" fill="var(--muted)">${esc(l)}</text>`; });
   const order = D.portfolios.map((_, i) => i).filter(i => i !== state.port).concat([state.port]);
-  order.forEach(i => {
+  order.forEach((i, k) => {
     const sel = i === state.port, d = PATHS[i].map((v, j) => `${j ? "L" : "M"}${x(j).toFixed(1)},${y(v).toFixed(1)}`).join("");
-    s += `<path d="${d}" fill="none" stroke="${D.portfolios[i].color}" stroke-width="${sel ? 3.5 : 2}" stroke-linejoin="round" stroke-linecap="round" opacity="${sel ? 1 : 0.85}"/>`;
-    s += `<circle cx="${x(last)}" cy="${y(PATHS[i][last])}" r="${sel ? 5 : 4}" fill="${D.portfolios[i].color}" stroke="var(--surface)" stroke-width="2"/>`;
+    s += `<path class="ln${anim}" pathLength="1" style="animation-delay:${k * 70}ms" d="${d}" fill="none" stroke="${D.portfolios[i].color}" stroke-width="${sel ? 3.5 : 2}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    s += `<circle class="pop${anim}" cx="${x(last)}" cy="${y(PATHS[i][last])}" r="${sel ? 5.5 : 4}" fill="${D.portfolios[i].color}" stroke="${sel ? "var(--ink)" : "var(--paper)"}" stroke-width="2"/>`;
   });
   if (!narrow) {
     const labs = D.portfolios.map((p, i) => ({ i, v: PATHS[i][last], y: y(PATHS[i][last]) })).sort((a, b) => a.y - b.y);
-    for (let k = 1; k < labs.length; k++) if (labs[k].y - labs[k - 1].y < 15) labs[k].y = labs[k - 1].y + 15;
+    for (let k = 1; k < labs.length; k++) if (labs[k].y - labs[k - 1].y < 16) labs[k].y = labs[k - 1].y + 16;
     const over = labs[labs.length - 1].y - (H - padB); if (over > 0) labs.forEach(l => l.y -= over);
     labs.forEach(l => {
       const sel = l.i === state.port;
-      s += `<text x="${x(last) + 10}" y="${l.y + 4}" font-size="11.5" font-weight="${sel ? 700 : 500}" fill="${sel ? "var(--ink)" : "var(--ink-2)"}" style="font-variant-numeric:tabular-nums">${pct(l.v)} ${esc(D.portfolios[l.i].name)}</text>`;
+      s += `<text class="pop${anim}" x="${x(last) + 12}" y="${l.y + 4}" font-size="12.5" font-weight="${sel ? 700 : 500}" fill="${sel ? "var(--ink)" : "var(--ink-2)"}" style="font-variant-numeric:tabular-nums">${pct(l.v)} ${esc(D.portfolios[l.i].name)}</text>`;
     });
   }
-  s += `<line id="xh" x1="0" x2="0" y1="${padT}" y2="${H - padB}" stroke="var(--axis)" stroke-width="1" opacity="0"/>`;
+  s += `<line id="xh" x1="0" x2="0" y1="${padT}" y2="${H - padB}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="2 3" opacity="0"/>`;
   s += `<rect x="${padL - 10}" y="0" width="${W - padL - padR + 20}" height="${H}" fill="transparent"/></svg>`;
   box.insertAdjacentHTML("beforeend", s);
+  drawn = true;
   const svg = box.querySelector("svg"), xh = svg.querySelector("#xh");
   const move = ev => {
     const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
     const j = Math.max(0, Math.min(last, Math.round((px - padL) / ((W - padL - padR) / n))));
     xh.setAttribute("x1", x(j)); xh.setAttribute("x2", x(j)); xh.setAttribute("opacity", 1);
     const rows = D.portfolios.map((p, i) => ({ p, i, v: PATHS[i][j] })).sort((a, b) => b.v - a.v);
-    tip.innerHTML = `<b>${j === 0 ? "Start (last week's close)" : esc(XL[j]) + " close"}</b>` + rows.map(o =>
+    tip.innerHTML = `<b>${j === 0 ? "Start: " + esc(XL[0]) + " close" : esc(XL[j]) + " close"}</b>` + rows.map(o =>
       `<div class="row"${o.i === state.port ? ' style="font-weight:700"' : ""}><span><i style="background:${o.p.color}"></i>${esc(o.p.name)}</span><span>${pct(o.v, 2)}</span></div>`).join("");
     tip.style.display = "block";
     const left = x(j) * r.width / W;
@@ -501,49 +505,62 @@ function drawRace() {
 
 // ---------- render ----------
 function render() {
-  const port = D.portfolios[state.port], sh = D.shocks[state.scen];
+  const port = D.portfolios[state.port];
+  const list = shocksFor(port);
+  if (!list.some(s => s.id === state.scen)) state.scen = list[0].id;
+  const sh = list.find(s => s.id === state.scen);
   const res = run(port.w, sh);
 
   [...$("ports").children].forEach((b, i) => b.setAttribute("aria-pressed", i === state.port));
   [...$("legend5").children].forEach((b, i) => b.setAttribute("aria-pressed", i === state.port));
-  document.querySelectorAll(".scen button").forEach(b => {
-    const i = Number(b.dataset.i), v = run(port.w, D.shocks[i]).total, el = b.querySelector(".res");
-    b.setAttribute("aria-pressed", i === state.scen);
-    el.textContent = pct(v, Math.abs(v) < 0.01 ? 2 : 1); el.className = "res " + (v < -0.00005 ? "neg" : v > 0.00005 ? "pos" : "");
+
+  // the five cells: this week, then the 4 biggest movers for this portfolio
+  $("scen-note").textContent = `Your past five days, then the four things that moved ${port.name} most.`;
+  $("scen").innerHTML = "";
+  list.forEach((s, n) => {
+    const v = run(port.w, s).total, b = document.createElement("button"), week = s.kind !== "mover";
+    b.className = "cell"; b.type = "button"; b.setAttribute("aria-pressed", s.id === state.scen);
+    let ft = s.card || "";
+    if (!week) {
+      const ex = exposure(port.w, s);
+      ft = s.mover_kind === "company" ? `${(ex * 100).toFixed(1)}% of this portfolio, through your funds.`
+        : s.id === "rates" ? `Your bonds are ${(ex * 100).toFixed(0)}% of this portfolio.`
+        : s.id === "rest" ? "The other stocks in your funds." : `${(ex * 100).toFixed(0)}% of this portfolio.`;
+    }
+    b.innerHTML = `<span class="ov">${esc(week ? tidy(s.date) : `No. ${n} mover: ${tidy(s.date)}`)}</span>
+      <span class="hd">${esc(week ? s.name : s.card)}</span>
+      <span class="res ${tone(v)}">${pct(v, Math.abs(v) < 0.01 ? 2 : 1)}</span><span class="ft">${esc(ft)}</span>`;
+    b.addEventListener("click", () => { state.scen = s.id; render(); });
+    $("scen").appendChild(b);
   });
   drawRace();
 
-  $("story").className = "story" + (sh.kind === "curated" ? " hist" : "");
-  $("story-k").textContent = `${sh.date} · ${sh.name}`;
-  $("story-p").textContent = sh.story;
-  const t = res.total;
+  // the result
+  const t = res.total, mover = sh.kind === "mover";
+  $("story-k").textContent = `${port.name}, ${mover ? sh.name.replace(/^The /, "the ") + " only (" + tidy(sh.date) + ")" : tidy(sh.date)}.`;
   $("big").textContent = pct(t, Math.abs(t) < 0.01 ? 2 : 1);
-  $("big").style.color = t < -0.00005 ? "var(--down)" : t > 0.00005 ? "var(--up)" : "var(--ink)";
+  $("big").className = "big " + tone(t);
   $("dollars").textContent = money(t * PV, true);
   const sev = $("sev");
-  if (t <= -0.15) { sev.className = "pill crit"; sev.textContent = "Severe loss"; }
-  else if (t <= -0.05) { sev.className = "pill crit"; sev.textContent = "Material loss"; }
-  else if (t < -0.00005) { sev.className = "pill crit"; sev.textContent = "Loss"; }
-  else { sev.className = "pill ok"; sev.textContent = t > 0.00005 ? "Gain" : "No change"; }
+  sev.className = "vstamp " + tone(t);
+  sev.textContent = t <= -0.15 ? "Severe loss" : t <= -0.05 ? "Material loss" : t < -0.00005 ? "Loss" : t > 0.00005 ? "Gain" : "No change";
+  $("moves").innerHTML = (sh.moves || []).map(m => `<span>${esc(m.label)} <b>${moveText(m)}</b></span>`).join("");
+  $("story-p").innerHTML = esc(sh.story) + (sh.url ? ` <a href="${esc(sh.url)}">Source: ${esc(sh.source || "article")}</a>` : "");
+  $("estnote").textContent = mover ? "Only this moves here. Everything else is held still." : "";
 
-  $("moves").innerHTML = sh.moves.map(m => `<span class="${m.est ? "est" : ""}">${esc(m.label)} <b>${moveText(m)}</b></span>`).join("");
-  $("estnote").textContent = sh.moves.some(m => m.est) ? "Dashed boxes are estimates; the rest are reported moves." : "";
+  // where every portfolio sits in this shock
+  const vals = D.portfolios.map(p => run(p.w, sh).total);
+  const m = Math.max(...vals.map(Math.abs), 0.0005);
+  const lim = [0.001, 0.002, 0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.5, 1].find(v => v >= m) || m;
+  const pos = v => (50 + v / lim * 50).toFixed(2);
+  $("scale").innerHTML = `<div class="scale-h">All ${D.portfolios.length} portfolios in this shock</div>
+    <div class="scale-track"><i class="zero"></i>` +
+    vals.map((v, i) => `<button type="button" class="pt${i === state.port ? " me" : ""}" data-i="${i}" style="left:${pos(v)}%;--c:${D.portfolios[i].color}" title="${esc(D.portfolios[i].name)} ${pct(v, 2)}" aria-label="${esc(D.portfolios[i].name)} ${pct(v, 2)}"></button>`).join("") +
+    `<span class="me-lab" style="left:${pos(vals[state.port])}%">You</span></div>
+    <div class="scale-ax"><span>${pct(-lim, lim < 0.01 ? 1 : 0)}</span><span>0</span><span>${pct(lim, lim < 0.01 ? 1 : 0)}</span></div>`;
+  $("scale").querySelectorAll(".pt").forEach(b => b.addEventListener("click", () => { state.port = Number(b.dataset.i); render(); }));
 
-  const rk = $("rank");
-  if (sh.kind === "week") {
-    const list = D.shocks.map((x, i) => ({ x, i, v: run(port.w, x).total })).filter(o => o.x.kind !== "week").sort((a, b) => Math.abs(b.v) - Math.abs(a.v));
-    const mx = Math.max(0.00001, ...list.map(o => Math.abs(o.v)));
-    rk.innerHTML = `<h3>What moved ${esc(port.name)} most</h3>` + list.map((o, k) => `<button type="button" data-i="${o.i}">
-      <span class="no">${k + 1}</span><span class="nm">${esc(o.x.name)}<small>${esc(o.x.date)}</small></span>
-      <span class="track"><span class="bar ${o.v < 0 ? "neg" : "pos"}" style="width:${Math.abs(o.v) / mx * 50}%"></span></span>
-      <span class="val">${pct(o.v, Math.abs(o.v) < 0.01 ? 2 : 1)}</span></button>`).join("") + `<p class="estnote">Tap one to see it on its own.</p>`;
-    rk.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { state.scen = Number(b.dataset.i); render(); $("story").scrollIntoView({ behavior: "smooth", block: "nearest" }); }));
-  } else rk.innerHTML = "";
-
-  let ins = res.nvdaW > 0 ? `Inside your funds: about <b>${money(res.nvdaW * PV)}</b> of Nvidia per $100,000 (${(res.nvdaW * 100).toFixed(1)}% of the portfolio).` : "Inside your funds: no meaningful Nvidia exposure.";
-  ins += res.bondW > 0 ? ` Each 0.01% rise in yields costs about <b>${money(res.dv01)}</b>.` : " No bonds, so nothing cushions a stock drop.";
-  $("inside").innerHTML = ins;
-
+  // where it came from
   const chart = $("chart"), tip = $("tip");
   chart.querySelectorAll(".bar-row").forEach(n => n.remove());
   const held = res.rows.filter(x => x.wt > 0);
@@ -565,6 +582,11 @@ function render() {
     row.addEventListener("focus", show); row.addEventListener("blur", hide);
     chart.appendChild(row);
   });
+
+  const top3 = stakes(port.w).slice(0, 3);
+  $("inside").innerHTML =
+    `<div><dt>Inside your funds</dt><dd>${top3.length ? top3.map(x => `${esc(x.h.name)} <b>${money(x.v * PV)}</b>`).join(", ") + " per $100,000. These are your biggest company stakes." : "No single company is a big part of this portfolio."}</dd></div>
+     <div><dt>Rate sensitivity</dt><dd>${res.bondW > 0 ? `Each 0.01% rise in yields costs about <b>${money(res.dv01)}</b> per $100,000.` : "No bonds, so nothing cushions a stock drop."}</dd></div>`;
 }
 
 load();
