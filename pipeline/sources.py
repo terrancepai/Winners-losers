@@ -34,6 +34,12 @@ def finnhub_news(key, category="general"):
     return get_json(f"https://finnhub.io/api/v1/news?category={category}&token={key}")
 
 
+def finnhub_company_news(symbol, start, end, key):
+    """Headlines about one company between two dates (YYYY-MM-DD)."""
+    return get_json(f"https://finnhub.io/api/v1/company-news?symbol={urllib.parse.quote(symbol)}"
+                    f"&from={start}&to={end}&token={key}")
+
+
 # ---------- Coinbase: bitcoin (no key) ----------
 def coinbase_spot(pair="BTC-USD"):
     d = get_json(f"https://api.coinbase.com/v2/prices/{pair}/spot")
