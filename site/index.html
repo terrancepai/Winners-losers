@@ -378,7 +378,10 @@ function build() {
   $("demo").hidden = !D.demo;
 
   const t = D.last_quote ? new Date(D.last_quote) : new Date(D.generated_at);
-  $("stamp").textContent = "Prices as of " + t.toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " ET";
+ const day = D.price_day ? new Date(D.price_day + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) : "";
+ $("stamp").textContent = D.price_day_live
+    ? "Live prices · updated " + t.toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) + " ET"
+    : day ? "Closing prices, " + day : "Prices as of " + t.toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" });
   $("tick-note").textContent = D.week_label + ". Change is since last week's close.";
 
   $("ticker").innerHTML = D.ticker.map(k => {
