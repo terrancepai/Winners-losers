@@ -40,6 +40,72 @@ def finnhub_company_news(symbol, start, end, key):
                     f"&from={start}&to={end}&token={key}")
 
 
+# ---------- News outlets ----------
+# Top stories come only from these four. Reuters has no free public feed, so its stories
+# arrive through Finnhub's general news feed; the other three also have public RSS feeds.
+OUTLETS = ["Reuters", "CNBC", "Yahoo Finance", "Bloomberg"]
+RSS_FEEDS = [
+    ("CNBC", "https://www.cnbc.com/id/100003114/device/rss/rss.html"),
+    ("Bloomberg", "https://feeds.bloomberg.com/markets/news.rss"),
+    ("Yahoo Finance", "https://finance.yahoo.com/news/rssindex"),
+]
+
+
+def outlet(name):
+    """Map a feed's source name to one of OUTLETS, or None. Finnhub writes "Yahoo", RSS writes the full name."""
+    n = (name or "").lower()
+    for o in OUTLETS:
+        if o.lower().split()[0] in n:
+            return o
+    return None
+
+
+def rss_news(url, source):
+    """Headlines from one RSS feed, in the same shape as Finnhub's: [{headline, summary, source, url, datetime}]."""
+    import html
+    import re
+    import xml.etree.ElementTree as ET
+    from email.utils import parsedate_to_datetime
+    root = ET.fromstring(get(url))
+    out = []
+    for item in root.iter("item"):
+        title = html.unescape((item.findtext("title") or "").strip())
+        link = (item.findtext("link") or "").strip()
+        if not title or not link:
+            continue
+        desc = re.sub(r"<[^>]+>", "", html.unescape(item.findtext("description") or "")).strip()
+        try:
+            ts = parsedate_to_datetime(item.findtext("pubDate")).timestamp()
+        except Exception:
+            ts = 0
+        out.append({"headline": title, "summary": desc, "source": source, "url": link, "datetime": ts, "related": ""})
+    return out
+
+
+def outlet_news(finnhub_key):
+    """Recent headlines from Reuters, CNBC, Yahoo Finance and Bloomberg, newest first, without duplicates."""
+    items = []
+    for source, url in RSS_FEEDS:
+        try:
+            items += rss_news(url, source)
+        except Exception as e:
+            print(f"{source} feed: {e}")
+    try:
+        for n in finnhub_news(finnhub_key):
+            o = outlet(n.get("source"))
+            if o and n.get("headline"):
+                items.append(n | {"source": o})
+    except Exception as e:
+        print(f"Finnhub news: {e}")
+    seen, out = set(), []
+    for n in sorted(items, key=lambda n: -n.get("datetime", 0)):
+        key = n["headline"].lower().strip()
+        if key not in seen:
+            seen.add(key)
+            out.append(n)
+    return out
+
+
 # ---------- Coinbase: bitcoin (no key) ----------
 def coinbase_spot(pair="BTC-USD"):
     d = get_json(f"https://api.coinbase.com/v2/prices/{pair}/spot")

@@ -217,6 +217,7 @@ def main(con=None, out_path=OUT, demo=False):
         "ticker": ticker,
         "stories": top,
         "stories_date": story_date,
+        "stories_updated": con.execute("SELECT MAX(ts) FROM runs WHERE job = 'news' AND ok = 1").fetchone()[0],
     }
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w") as f:

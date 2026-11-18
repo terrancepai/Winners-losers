@@ -33,6 +33,7 @@ TOP_PROMPT = """You are the markets editor of an investor dashboard. Below are t
 
 Pick the 5 items that matter most for ordinary investors holding index funds, target-date funds,
 tech funds, bonds or bitcoin. Prefer stories that moved markets, interest rates or big companies.
+If two items cover the same story, pick only one. When stories are equally important, mix outlets.
 
 """ + RULES + """- Headline: at most 14 words. Summary: at most 2 short sentences.
 - kicker: one or two words naming the topic (e.g. "Nvidia", "Rates", "Oil").
@@ -109,8 +110,8 @@ def mover_stories(con, today, general, fkey):
 
     lookup, payload = {}, []
     general_items = []
-    for i, n in enumerate(general[:25]):
-        key = f"G-{i}"
+    for i, n in enumerate(general[:30]):
+        key = f"N-{i}"
         lookup[key] = n
         general_items.append({"id": key, "source": n.get("source", ""), "headline": n["headline"], "blurb": (n.get("summary") or "")[:200]})
     for m in movers:
@@ -122,7 +123,9 @@ def mover_stories(con, today, general, fkey):
                 print(f"{m['symbol']} news: {e}")
                 news = []
             time.sleep(1.1)
-            news = sorted(news, key=lambda n: -n.get("datetime", 0))[:8]
+            # prefer the four outlets; use other sources only if none of them covered it
+            mine = [n | {"source": sources.outlet(n.get("source"))} for n in news if sources.outlet(n.get("source"))]
+            news = sorted(mine or news, key=lambda n: -n.get("datetime", 0))[:8]
             entry["items"] = []
             for j, n in enumerate(news):
                 key = f"{m['id']}-{j}"
@@ -130,10 +133,10 @@ def mover_stories(con, today, general, fkey):
                 entry["items"].append({"id": key, "source": n.get("source", ""), "headline": n.get("headline", ""),
                                        "blurb": (n.get("summary") or "")[:200]})
         else:
-            entry["items"] = "use the general market items below"
+            entry["items"] = "use the market news items below"
         payload.append(entry)
 
-    prompt = MOVER_PROMPT + json.dumps(payload, ensure_ascii=False) + "\n\nGeneral market items:\n" + json.dumps(general_items, ensure_ascii=False)
+    prompt = MOVER_PROMPT + json.dumps(payload, ensure_ascii=False) + "\n\nMarket news items (may also cover the companies above):\n" + json.dumps(general_items, ensure_ascii=False)
     out = parse_json(sources.claude(prompt, config.CLAUDE_MODEL, max_tokens=2500))
     valid = {m["id"] for m in movers}
     saved = 0
@@ -157,8 +160,17 @@ def main():
     ts = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     con = db.connect()
 
+    # Top stories come from Reuters, CNBC, Yahoo Finance and Bloomberg. If those can't be reached,
+    # fall back to every source in Finnhub's general feed so the section never goes stale.
     cutoff = time.time() - 30 * 3600
-    general = [n for n in sources.finnhub_news(fkey) if n.get("datetime", 0) >= cutoff and n.get("headline")]
+    general = [n for n in sources.outlet_news(fkey) if n.get("datetime", 0) >= cutoff]
+    print("Items by outlet:", {o: sum(n["source"] == o for n in general) for o in sources.OUTLETS})
+    if len(general) < 5:
+        print("::warning::Fewer than 5 recent items from Reuters, CNBC, Yahoo Finance and Bloomberg; adding other sources.")
+        try:
+            general += [n for n in sources.finnhub_news(fkey) if n.get("datetime", 0) >= cutoff and n.get("headline")]
+        except Exception as e:
+            print(f"Finnhub news: {e}")
 
     notes, ok = [], True
     for name, job in (("top stories", lambda: top_stories(con, today, general)),
